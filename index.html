@@ -247,6 +247,33 @@ body{
   #readout{position:static; width:auto; margin:0}
 }
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ---------- language switcher ---------- */
+#langs{display:grid; grid-template-columns:1fr 1fr; gap:5px}
+.lng{border:1px solid var(--rule); background:var(--panel-2); color:var(--ink-2);
+  border-radius:4px; padding:6px 4px; font-size:11.5px; font-weight:400;
+  cursor:pointer; font-family:"Noto Sans SC",system-ui,sans-serif;
+  transition:background .13s,color .13s}
+.lng:hover{background:var(--hover)}
+.lng[aria-pressed="true"]{background:var(--front); color:#fff; border-color:var(--front)}
+.lng:focus-visible{outline:2px solid var(--front); outline-offset:2px}
+
+/* ---------- Arabic: mirror the chrome, never the map ---------- */
+html[dir="rtl"] #app{direction:rtl}
+html[dir="rtl"] #rail{border-right:none; border-left:1px solid var(--rule)}
+html[dir="rtl"] .tog{flex-direction:row-reverse; justify-content:flex-end}
+html[dir="rtl"] .legend-row{flex-direction:row-reverse; justify-content:flex-end}
+html[dir="rtl"] #readout{left:auto; right:auto}
+html[dir="rtl"] .stat .v{direction:ltr; text-align:right}
+/* The map and the TIMELINE must never mirror: a time axis running right-to-left
+   would put 2026 on the left and 2022 on the right, which reverses the reading
+   of the whole animation. #bar is the transport + track row. */
+html[dir="rtl"] #stage, html[dir="rtl"] #bar, html[dir="rtl"] #track,
+html[dir="rtl"] #ticks, html[dir="rtl"] #transport,
+html[dir="rtl"] .mono{direction:ltr}
+html[dir="rtl"] #slider{direction:ltr}
+html[dir="rtl"] #brand h1, html[dir="rtl"] #brand .sub{text-align:right}
+
 </style>
 
 </head>
@@ -254,64 +281,77 @@ body{
 <div id="app">
   <aside id="rail">
     <div id="brand" class="rail-pad">
-      <div class="eyebrow">Russo-Ukrainian War · Situation Map</div>
-      <h1>俄乌战场态势图</h1>
+      <div class="eyebrow" data-i18n="eyebrow">Russo-Ukrainian War · Situation Map</div>
+      <h1 data-i18n="title">俄乌战场态势图</h1>
       <div class="sub mono">2022.02.24 — 2026.08.26</div>
     </div>
 
     <div class="group">
-      <h2>底图</h2>
+      <h2 data-i18n="lang">语言</h2>
+      <div id="langs">
+        <button class="lng" data-l="zh" lang="zh" aria-pressed="true">中文</button>
+        <button class="lng" data-l="en" lang="en" aria-pressed="false">English</button>
+        <button class="lng" data-l="ru" lang="ru" aria-pressed="false">Русский</button>
+        <button class="lng" data-l="uk" lang="uk" aria-pressed="false">Українська</button>
+        <button class="lng" data-l="fr" lang="fr" aria-pressed="false">Français</button>
+        <button class="lng" data-l="es" lang="es" aria-pressed="false">Español</button>
+        <button class="lng" data-l="ar" lang="ar" aria-pressed="false">العربية</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2 data-i18n="basemap">底图</h2>
       <div id="basemaps">
-        <button class="bm" data-b="vector" aria-pressed="true">矢量底图（内置）</button>
+        <button class="bm" data-b="vector" aria-pressed="true" data-i18n="bm_vector">矢量底图（内置）</button>
         <button class="bm" data-b="osm" aria-pressed="false">OpenStreetMap</button>
-        <button class="bm" data-b="topo" aria-pressed="false">ArcGIS 地形</button>
-        <button class="bm" data-b="imagery" aria-pressed="false">ArcGIS 卫星影像</button>
-        <button class="bm" data-b="dark" aria-pressed="false">ArcGIS 深灰</button>
-        <button class="bm" data-b="light" aria-pressed="false">ArcGIS 浅灰</button>
+        <button class="bm" data-b="topo" aria-pressed="false" data-i18n="bm_topo">ArcGIS 地形</button>
+        <button class="bm" data-b="imagery" aria-pressed="false" data-i18n="bm_imagery">ArcGIS 卫星影像</button>
+        <button class="bm" data-b="dark" aria-pressed="false" data-i18n="bm_dark">ArcGIS 深灰</button>
+        <button class="bm" data-b="light" aria-pressed="false" data-i18n="bm_light">ArcGIS 浅灰</button>
       </div>
       <div id="bmNote"></div>
     </div>
 
     <div class="group">
-      <h2>制图样式</h2>
+      <h2 data-i18n="style">制图样式</h2>
       <div id="styles">
-        <button class="sty" data-s="auto" aria-pressed="true">跟随系统</button>
-        <button class="sty" data-s="litho" aria-pressed="false">石印参谋图</button>
-        <button class="sty" data-s="tactical" aria-pressed="false">战术情报屏</button>
-        <button class="sty" data-s="geo" aria-pressed="false">地理图集</button>
+        <button class="sty" data-s="auto" aria-pressed="true" data-i18n="sty_auto">跟随系统</button>
+        <button class="sty" data-s="litho" aria-pressed="false" data-i18n="sty_litho">石印参谋图</button>
+        <button class="sty" data-s="tactical" aria-pressed="false" data-i18n="sty_tactical">战术情报屏</button>
+        <button class="sty" data-s="geo" aria-pressed="false" data-i18n="sty_geo">地理图集</button>
       </div>
     </div>
 
     <div class="group">
-      <h2>图层</h2>
-      <label class="tog"><input type="checkbox" id="L_ru" checked><span class="box"></span><span class="lbl">俄军实际控制区</span></label>
-      <label class="tog"><input type="checkbox" id="L_front" checked><span class="box"></span><span class="lbl">接触线（战线）</span></label>
-      <label class="tog"><input type="checkbox" id="L_grey" checked><span class="box"></span><span class="lbl">过境／灰色地带</span></label>
-      <label class="tog"><input type="checkbox" id="L_kur" checked><span class="box"></span><span class="lbl">乌军控制俄境</span></label>
-      <label class="tog"><input type="checkbox" id="L_arrow" checked><span class="box"></span><span class="lbl">进攻方向</span></label>
-      <label class="tog"><input type="checkbox" id="L_obl" checked><span class="box"></span><span class="lbl">州界</span></label>
-      <label class="tog"><input type="checkbox" id="L_riv" checked><span class="box"></span><span class="lbl">水系与水库</span></label>
-      <label class="tog"><input type="checkbox" id="L_bath" checked><span class="box"></span><span class="lbl">海底等深带</span></label>
-      <label class="tog"><input type="checkbox" id="L_urb" checked><span class="box"></span><span class="lbl">城市建成区</span></label>
-      <label class="tog"><input type="checkbox" id="L_rail" checked><span class="box"></span><span class="lbl">铁路网</span></label>
-      <label class="tog"><input type="checkbox" id="L_city" checked><span class="box"></span><span class="lbl">城市</span></label>
-      <label class="tog"><input type="checkbox" id="L_town"><span class="box"></span><span class="lbl">前线城镇</span></label>
+      <h2 data-i18n="layers">图层</h2>
+      <label class="tog"><input type="checkbox" id="L_ru" checked><span class="box"></span><span class="lbl" data-i18n="l_ru">俄军实际控制区</span></label>
+      <label class="tog"><input type="checkbox" id="L_front" checked><span class="box"></span><span class="lbl" data-i18n="l_front">接触线（战线）</span></label>
+      <label class="tog"><input type="checkbox" id="L_grey" checked><span class="box"></span><span class="lbl" data-i18n="l_grey">过境／灰色地带</span></label>
+      <label class="tog"><input type="checkbox" id="L_kur" checked><span class="box"></span><span class="lbl" data-i18n="l_kur">乌军控制俄境</span></label>
+      <label class="tog"><input type="checkbox" id="L_arrow" checked><span class="box"></span><span class="lbl" data-i18n="l_arrow">进攻方向</span></label>
+      <label class="tog"><input type="checkbox" id="L_obl" checked><span class="box"></span><span class="lbl" data-i18n="l_obl">州界</span></label>
+      <label class="tog"><input type="checkbox" id="L_riv" checked><span class="box"></span><span class="lbl" data-i18n="l_riv">水系与水库</span></label>
+      <label class="tog"><input type="checkbox" id="L_bath" checked><span class="box"></span><span class="lbl" data-i18n="l_bath">海底等深带</span></label>
+      <label class="tog"><input type="checkbox" id="L_urb" checked><span class="box"></span><span class="lbl" data-i18n="l_urb">城市建成区</span></label>
+      <label class="tog"><input type="checkbox" id="L_rail" checked><span class="box"></span><span class="lbl" data-i18n="l_rail">铁路网</span></label>
+      <label class="tog"><input type="checkbox" id="L_city" checked><span class="box"></span><span class="lbl" data-i18n="l_city">城市</span></label>
+      <label class="tog"><input type="checkbox" id="L_town"><span class="box"></span><span class="lbl" data-i18n="l_town">前线城镇</span></label>
     </div>
 
     <div class="group">
-      <h2>图例</h2>
-      <div class="legend-row"><span class="chip" style="background:var(--ru-fill);border:1px solid var(--ru); box-shadow:0 0 0 1px var(--panel)"></span>俄军实际控制</div>
-      <div class="legend-row"><span class="chip" style="background:repeating-linear-gradient(45deg,var(--grey-zone) 0 2px,transparent 2px 5px); border:1px solid var(--grey-zone)"></span>过境／灰色地带</div>
-      <div class="legend-row"><span class="chip" style="background:var(--uah);border:1px solid var(--uah-edge)"></span>乌军控制俄境</div>
-      <div class="legend-row"><span class="chip" style="background:var(--ua);border:1px solid var(--ua-edge)"></span>乌克兰控制</div>
-      <div class="legend-row"><span class="chip line" style="border-color:var(--contact)"></span>接触线</div>
-      <div class="legend-row"><svg class="chip" viewBox="0 0 22 12" aria-hidden="true"><path d="M0 7.4 Q9 4.6 13 5.2 L13 2.2 L21.5 6.2 L13 10.2 L13 7.6 Q9 7.2 0 8.6 Z" fill="var(--arrow-ru)"/></svg>俄军主要进攻方向</div>
-      <div class="legend-row"><svg class="chip" viewBox="0 0 22 12" aria-hidden="true"><path d="M0 7.4 Q9 4.6 13 5.2 L13 2.2 L21.5 6.2 L13 10.2 L13 7.6 Q9 7.2 0 8.6 Z" fill="var(--arrow-ua)"/></svg>乌军反攻方向</div>
+      <h2 data-i18n="legend">图例</h2>
+      <div class="legend-row"><span class="chip" style="background:var(--ru-fill);border:1px solid var(--ru); box-shadow:0 0 0 1px var(--panel)"></span><span data-i18n="lg_ru">俄军实际控制</span></div>
+      <div class="legend-row"><span class="chip" style="background:repeating-linear-gradient(45deg,var(--grey-zone) 0 2px,transparent 2px 5px); border:1px solid var(--grey-zone)"></span><span data-i18n="l_grey">过境／灰色地带</span></div>
+      <div class="legend-row"><span class="chip" style="background:var(--uah);border:1px solid var(--uah-edge)"></span><span data-i18n="l_kur">乌军控制俄境</span></div>
+      <div class="legend-row"><span class="chip" style="background:var(--ua);border:1px solid var(--ua-edge)"></span><span data-i18n="lg_ua">乌克兰控制</span></div>
+      <div class="legend-row"><span class="chip line" style="border-color:var(--contact)"></span><span data-i18n="l_front">接触线</span></div>
+      <div class="legend-row"><svg class="chip" viewBox="0 0 22 12" aria-hidden="true"><path d="M0 7.4 Q9 4.6 13 5.2 L13 2.2 L21.5 6.2 L13 10.2 L13 7.6 Q9 7.2 0 8.6 Z" fill="var(--arrow-ru)"/></svg><span data-i18n="lg_arrow_ru">俄军主要进攻方向</span></div>
+      <div class="legend-row"><svg class="chip" viewBox="0 0 22 12" aria-hidden="true"><path d="M0 7.4 Q9 4.6 13 5.2 L13 2.2 L21.5 6.2 L13 10.2 L13 7.6 Q9 7.2 0 8.6 Z" fill="var(--arrow-ua)"/></svg><span data-i18n="lg_arrow_ua">乌军反攻方向</span></div>
     </div>
 
     <div id="sources">
       <details open>
-        <summary>数据与口径</summary>
+        <summary data-i18n="sources">数据与口径</summary>
         <p style="margin:9px 0 0">
           <strong style="color:var(--ink-2)">2024-07-08 起</strong>：DeepStateMap 逐日占领区实测数据（每日 03:00 UTC 更新）。<br>
           <strong style="color:var(--ink-2)">此前</strong>：依据 ISW／Critical Threats 每日战况评估与公开战史，对 16 个关键日期的战线作示意性重建，精度约 5–10&nbsp;km，图中以斜纹与虚线标示。
@@ -942,6 +982,39 @@ addEventListener("keydown", e=>{
   if(e.key==="ArrowLeft"){ stop(); render(Math.max(0, idx-1)); }
 });
 
+
+/* ---------- i18n ---------- */
+const I18N = {"title": {"zh": "俄乌战场态势图", "en": "Russo-Ukrainian War · Situation Map", "ru": "Российско-украинская война · Карта обстановки", "uk": "Російсько-українська війна · Карта обстановки", "fr": "Guerre russo-ukrainienne · Carte de situation", "es": "Guerra ruso-ucraniana · Mapa de situación", "ar": "الحرب الروسية الأوكرانية · خريطة الوضع الميداني"}, "eyebrow": {"zh": "Russo-Ukrainian War · Situation Map", "en": "Russo-Ukrainian War · Situation Map", "ru": "Карта обстановки", "uk": "Карта обстановки", "fr": "Carte de situation", "es": "Mapa de situación", "ar": "خريطة الوضع الميداني"}, "basemap": {"zh": "底图", "en": "Basemap", "ru": "Подложка", "uk": "Підкладка", "fr": "Fond de carte", "es": "Mapa base", "ar": "خريطة الأساس"}, "bm_vector": {"zh": "矢量底图（内置）", "en": "Vector (built-in)", "ru": "Векторная (встроенная)", "uk": "Векторна (вбудована)", "fr": "Vectoriel (intégré)", "es": "Vectorial (integrado)", "ar": "متجهية (مدمجة)"}, "bm_topo": {"zh": "ArcGIS 地形", "en": "ArcGIS Topographic", "ru": "ArcGIS Топография", "uk": "ArcGIS Топографія", "fr": "ArcGIS Topographique", "es": "ArcGIS Topográfico", "ar": "ArcGIS تضاريس"}, "bm_imagery": {"zh": "ArcGIS 卫星影像", "en": "ArcGIS Imagery", "ru": "ArcGIS Снимки", "uk": "ArcGIS Знімки", "fr": "ArcGIS Imagerie", "es": "ArcGIS Imágenes", "ar": "ArcGIS صور جوية"}, "bm_dark": {"zh": "ArcGIS 深灰", "en": "ArcGIS Dark Gray", "ru": "ArcGIS Тёмно-серая", "uk": "ArcGIS Темно-сіра", "fr": "ArcGIS Gris foncé", "es": "ArcGIS Gris oscuro", "ar": "ArcGIS رمادي داكن"}, "bm_light": {"zh": "ArcGIS 浅灰", "en": "ArcGIS Light Gray", "ru": "ArcGIS Светло-серая", "uk": "ArcGIS Світло-сіра", "fr": "ArcGIS Gris clair", "es": "ArcGIS Gris claro", "ar": "ArcGIS رمادي فاتح"}, "bm_note_tile": {"zh": "在线瓦片需要网络访问；若无法加载会自动退回矢量底图。", "en": "Online tiles need network access; the map falls back to vector if they fail.", "ru": "Онлайн-тайлы требуют доступа к сети; при сбое карта вернётся к векторной подложке.", "uk": "Онлайн-тайли потребують доступу до мережі; у разі збою карта повернеться до векторної підкладки.", "fr": "Les tuiles en ligne nécessitent un accès réseau ; en cas d'échec, retour au fond vectoriel.", "es": "Los teselados en línea requieren red; si fallan, se vuelve al mapa vectorial.", "ar": "تتطلب البلاطات الشبكة؛ عند الفشل تعود الخريطة إلى الأساس المتجهي."}, "bm_note_vec": {"zh": "矢量底图完全内置，离线可用。", "en": "The vector basemap is fully built in and works offline.", "ru": "Векторная подложка встроена полностью и работает офлайн.", "uk": "Векторна підкладка вбудована повністю й працює офлайн.", "fr": "Le fond vectoriel est entièrement intégré et fonctionne hors ligne.", "es": "El mapa base vectorial está integrado y funciona sin conexión.", "ar": "الأساس المتجهي مدمج بالكامل ويعمل دون اتصال."}, "style": {"zh": "制图样式", "en": "Cartographic style", "ru": "Стиль оформления", "uk": "Стиль оформлення", "fr": "Style cartographique", "es": "Estilo cartográfico", "ar": "النمط الخرائطي"}, "sty_auto": {"zh": "跟随系统", "en": "Follow system", "ru": "Как в системе", "uk": "Як у системі", "fr": "Suivre le système", "es": "Según el sistema", "ar": "حسب النظام"}, "sty_litho": {"zh": "石印参谋图", "en": "Lithographic staff map", "ru": "Литографская штабная", "uk": "Літографська штабна", "fr": "Carte d'état-major lithographique", "es": "Mapa de estado mayor litográfico", "ar": "خريطة أركان حجرية"}, "sty_tactical": {"zh": "战术情报屏", "en": "Tactical display", "ru": "Тактический экран", "uk": "Тактичний екран", "fr": "Écran tactique", "es": "Pantalla táctica", "ar": "شاشة تكتيكية"}, "sty_geo": {"zh": "地理图集", "en": "Physical atlas", "ru": "Физический атлас", "uk": "Фізичний атлас", "fr": "Atlas physique", "es": "Atlas físico", "ar": "أطلس طبيعي"}, "layers": {"zh": "图层", "en": "Layers", "ru": "Слои", "uk": "Шари", "fr": "Couches", "es": "Capas", "ar": "الطبقات"}, "l_ru": {"zh": "俄军实际控制区", "en": "Russian-controlled area", "ru": "Зона контроля ВС РФ", "uk": "Зона контролю РФ", "fr": "Zone sous contrôle russe", "es": "Zona bajo control ruso", "ar": "المنطقة الخاضعة للسيطرة الروسية"}, "l_front": {"zh": "接触线（战线）", "en": "Line of contact", "ru": "Линия соприкосновения", "uk": "Лінія зіткнення", "fr": "Ligne de contact", "es": "Línea de contacto", "ar": "خط التماس"}, "l_grey": {"zh": "过境／灰色地带", "en": "Transit / grey zone", "ru": "Транзит / серая зона", "uk": "Транзит / сіра зона", "fr": "Transit / zone grise", "es": "Tránsito / zona gris", "ar": "عبور / المنطقة الرمادية"}, "l_kur": {"zh": "乌军控制俄境", "en": "Ukrainian-held Russian territory", "ru": "Территория РФ под контролем ВСУ", "uk": "Територія РФ під контролем ЗСУ", "fr": "Territoire russe tenu par l'Ukraine", "es": "Territorio ruso en manos ucranianas", "ar": "أراضٍ روسية تسيطر عليها أوكرانيا"}, "l_arrow": {"zh": "进攻方向", "en": "Axes of advance", "ru": "Направления наступления", "uk": "Напрямки наступу", "fr": "Axes de progression", "es": "Ejes de avance", "ar": "محاور التقدم"}, "l_obl": {"zh": "州界", "en": "Oblast boundaries", "ru": "Границы областей", "uk": "Межі областей", "fr": "Limites d'oblasts", "es": "Límites de óblast", "ar": "حدود الأقاليم"}, "l_riv": {"zh": "水系与水库", "en": "Rivers & reservoirs", "ru": "Реки и водохранилища", "uk": "Річки та водосховища", "fr": "Rivières et réservoirs", "es": "Ríos y embalses", "ar": "الأنهار والخزانات"}, "l_bath": {"zh": "海底等深带", "en": "Bathymetry", "ru": "Батиметрия", "uk": "Батиметрія", "fr": "Bathymétrie", "es": "Batimetría", "ar": "أعماق البحر"}, "l_urb": {"zh": "城市建成区", "en": "Built-up areas", "ru": "Застроенные территории", "uk": "Забудовані території", "fr": "Zones bâties", "es": "Áreas urbanizadas", "ar": "المناطق المبنية"}, "l_rail": {"zh": "铁路网", "en": "Railways", "ru": "Железные дороги", "uk": "Залізниці", "fr": "Chemins de fer", "es": "Ferrocarriles", "ar": "السكك الحديدية"}, "l_city": {"zh": "城市", "en": "Cities", "ru": "Города", "uk": "Міста", "fr": "Villes", "es": "Ciudades", "ar": "المدن"}, "l_town": {"zh": "前线城镇", "en": "Front-line towns", "ru": "Прифронтовые города", "uk": "Прифронтові міста", "fr": "Villes du front", "es": "Localidades del frente", "ar": "بلدات خط الجبهة"}, "legend": {"zh": "图例", "en": "Legend", "ru": "Легенда", "uk": "Легенда", "fr": "Légende", "es": "Leyenda", "ar": "مفتاح الخريطة"}, "lg_ru": {"zh": "俄军实际控制", "en": "Russian control", "ru": "Контроль ВС РФ", "uk": "Контроль РФ", "fr": "Contrôle russe", "es": "Control ruso", "ar": "سيطرة روسية"}, "lg_ua": {"zh": "乌克兰控制", "en": "Ukrainian control", "ru": "Контроль Украины", "uk": "Контроль України", "fr": "Contrôle ukrainien", "es": "Control ucraniano", "ar": "سيطرة أوكرانية"}, "lg_arrow_ru": {"zh": "俄军主要进攻方向", "en": "Main Russian axes of advance", "ru": "Основные направления наступления ВС РФ", "uk": "Основні напрямки наступу РФ", "fr": "Principaux axes d'offensive russes", "es": "Principales ejes de avance ruso", "ar": "محاور التقدم الروسي الرئيسية"}, "lg_arrow_ua": {"zh": "乌军反攻方向", "en": "Ukrainian counter-attack axes", "ru": "Направления контратак ВСУ", "uk": "Напрямки контратак ЗСУ", "fr": "Axes de contre-attaque ukrainiens", "es": "Ejes de contraataque ucraniano", "ar": "محاور الهجوم الأوكراني المضاد"}, "readout_km2": {"zh": "俄军控制", "en": "under Russian control", "ru": "под контролем ВС РФ", "uk": "під контролем РФ", "fr": "sous contrôle russe", "es": "bajo control ruso", "ar": "تحت السيطرة الروسية"}, "readout_pct": {"zh": "占乌国土", "en": "of Ukraine", "ru": "территории Украины", "uk": "території України", "fr": "du territoire ukrainien", "es": "del territorio ucraniano", "ar": "من أراضي أوكرانيا"}, "readout_kur": {"zh": "乌军控制俄境", "en": "Ukrainian-held Russian territory", "ru": "Территория РФ под контролем ВСУ", "uk": "Територія РФ під контролем ЗСУ", "fr": "Territoire russe tenu par l'Ukraine", "es": "Territorio ruso en manos ucranianas", "ar": "أراضٍ روسية تسيطر عليها أوكرانيا"}, "axes_head": {"zh": "战役方向 · 部署重心", "en": "Axes of effort · main deployments", "ru": "Направления · сосредоточение сил", "uk": "Напрямки · зосередження сил", "fr": "Axes d'effort · déploiements principaux", "es": "Ejes de esfuerzo · despliegues principales", "ar": "محاور الجهد · انتشار القوات"}, "src_schem": {"zh": "示意重建", "en": "Schematic reconstruction", "ru": "Схематическая реконструкция", "uk": "Схематична реконструкція", "fr": "Reconstruction schématique", "es": "Reconstrucción esquemática", "ar": "إعادة بناء تخطيطية"}, "src_meas": {"zh": "逐日实测", "en": "Daily measured", "ru": "Ежедневные данные", "uk": "Щоденні дані", "fr": "Mesuré quotidiennement", "es": "Medición diaria", "ar": "قياس يومي"}, "sources": {"zh": "数据与口径", "en": "Data & methodology", "ru": "Данные и методика", "uk": "Дані та методика", "fr": "Données et méthodologie", "es": "Datos y metodología", "ar": "البيانات والمنهجية"}, "play": {"zh": "播放", "en": "Play", "ru": "Воспроизвести", "uk": "Відтворити", "fr": "Lecture", "es": "Reproducir", "ar": "تشغيل"}, "pause": {"zh": "暂停", "en": "Pause", "ru": "Пауза", "uk": "Пауза", "fr": "Pause", "es": "Pausa", "ar": "إيقاف مؤقت"}, "zoom_in": {"zh": "放大", "en": "Zoom in", "ru": "Приблизить", "uk": "Наблизити", "fr": "Zoom avant", "es": "Acercar", "ar": "تكبير"}, "zoom_out": {"zh": "缩小", "en": "Zoom out", "ru": "Отдалить", "uk": "Віддалити", "fr": "Zoom arrière", "es": "Alejar", "ar": "تصغير"}, "reset": {"zh": "全国", "en": "Whole country", "ru": "Вся страна", "uk": "Вся країна", "fr": "Pays entier", "es": "País completo", "ar": "البلد بأكمله"}, "donbas": {"zh": "顿巴斯", "en": "Donbas", "ru": "Донбасс", "uk": "Донбас", "fr": "Donbass", "es": "Dombás", "ar": "دونباس"}, "date": {"zh": "日期", "en": "Date", "ru": "Дата", "uk": "Дата", "fr": "Date", "es": "Fecha", "ar": "التاريخ"}, "lang": {"zh": "语言", "en": "Language", "ru": "Язык", "uk": "Мова", "fr": "Langue", "es": "Idioma", "ar": "اللغة"}, "load_fail": {"zh": "数据加载失败", "en": "Failed to load data", "ru": "Не удалось загрузить данные", "uk": "Не вдалося завантажити дані", "fr": "Échec du chargement des données", "es": "Error al cargar los datos", "ar": "فشل تحميل البيانات"}, "http_hint": {"zh": "本页需要与 data/ 目录一起通过 HTTP 提供服务；把本页保存到本地用浏览器打开即可正常加载。", "en": "This page must be served over HTTP alongside the data/ directory.", "ru": "Страницу нужно отдавать по HTTP вместе с каталогом data/.", "uk": "Сторінку потрібно віддавати по HTTP разом з каталогом data/.", "fr": "Cette page doit être servie en HTTP avec le répertoire data/.", "es": "Esta página debe servirse por HTTP junto con el directorio data/.", "ar": "يجب تقديم هذه الصفحة عبر HTTP مع مجلد data/."}, "tiles_blocked": {"zh": "此环境无法加载在线瓦片（网络策略限制），已退回矢量底图。", "en": "Online tiles are blocked in this environment; fell back to the vector basemap.", "ru": "Онлайн-тайлы заблокированы в этой среде; выполнен возврат к векторной подложке.", "uk": "Онлайн-тайли заблоковані в цьому середовищі; повернено векторну підкладку.", "fr": "Les tuiles en ligne sont bloquées ici ; retour au fond vectoriel.", "es": "Las teselas en línea están bloqueadas aquí; se volvió al mapa base vectorial.", "ar": "البلاطات المتصلة محجوبة هنا؛ تمت العودة إلى الأساس المتجهي."}};
+const I18N_GEO = {"Russia": {"zh": "俄罗斯", "en": "Russia", "ru": "Россия", "uk": "Росія", "fr": "Russie", "es": "Rusia", "ar": "روسيا"}, "Belarus": {"zh": "白俄罗斯", "en": "Belarus", "ru": "Беларусь", "uk": "Білорусь", "fr": "Biélorussie", "es": "Bielorrusia", "ar": "بيلاروسيا"}, "Poland": {"zh": "波兰", "en": "Poland", "ru": "Польша", "uk": "Польща", "fr": "Pologne", "es": "Polonia", "ar": "بولندا"}, "Moldova": {"zh": "摩尔多瓦", "en": "Moldova", "ru": "Молдова", "uk": "Молдова", "fr": "Moldavie", "es": "Moldavia", "ar": "مولدوفا"}, "Romania": {"zh": "罗马尼亚", "en": "Romania", "ru": "Румыния", "uk": "Румунія", "fr": "Roumanie", "es": "Rumanía", "ar": "رومانيا"}, "Hungary": {"zh": "匈牙利", "en": "Hungary", "ru": "Венгрия", "uk": "Угорщина", "fr": "Hongrie", "es": "Hungría", "ar": "المجر"}, "Slovakia": {"zh": "斯洛伐克", "en": "Slovakia", "ru": "Словакия", "uk": "Словаччина", "fr": "Slovaquie", "es": "Eslovaquia", "ar": "سلوفاكيا"}, "BlackSea": {"zh": "黑海", "en": "Black Sea", "ru": "Чёрное море", "uk": "Чорне море", "fr": "Mer Noire", "es": "Mar Negro", "ar": "البحر الأسود"}, "AzovSea": {"zh": "亚速海", "en": "Sea of Azov", "ru": "Азовское море", "uk": "Азовське море", "fr": "Mer d'Azov", "es": "Mar de Azov", "ar": "بحر آزوف"}};
+const LANG_DIR = {"zh": "ltr", "en": "ltr", "ru": "ltr", "uk": "ltr", "fr": "ltr", "es": "ltr", "ar": "rtl"};
+let LANG = "zh";
+function t(key){
+  const row = I18N[key];
+  return (row && (row[LANG] || row.en)) || key;
+}
+function tGeo(name){
+  const row = I18N_GEO[name];
+  return (row && (row[LANG] || row.en)) || name;
+}
+function setLang(l, remember){
+  if(!LANG_DIR[l]) l = "zh";
+  LANG = l;
+  const dir = LANG_DIR[l];
+  document.documentElement.setAttribute("lang", l);
+  document.documentElement.setAttribute("dir", dir);
+  document.querySelectorAll(".lng").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.l === l)));
+  document.querySelectorAll("[data-i18n]").forEach(el => {
+    el.textContent = t(el.dataset.i18n);
+  });
+  const p = document.getElementById("play");
+  if(p) p.setAttribute("aria-label", t(p.dataset.playing ? "pause" : "play"));
+  if(remember){ try{ localStorage.setItem("uawar-lang", l); }catch(e){} }
+  if(typeof relabel === "function") relabel();
+  if(typeof render === "function" && typeof idx !== "undefined") render(idx);
+}
+document.querySelectorAll(".lng").forEach(b => b.onclick = ()=> setLang(b.dataset.l, true));
+
 /* ---------- raster basemaps ---------- */
 const TILESETS = {
   vector:  null,
@@ -1088,6 +1161,8 @@ try{
 requestAnimationFrame(()=>{
   fit(40); buildSpark(); render(F.length-1);
   let b = "vector";
+  try{ setLang(localStorage.getItem("uawar-lang") || "zh", false); }
+  catch(e){ setLang("zh", false); }
   try{ b = localStorage.getItem("uawar-basemap") || "vector"; }catch(e){}
   setBasemap(b, false);
 });
