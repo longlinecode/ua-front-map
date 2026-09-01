@@ -1,0 +1,67 @@
+name: Update front-line data
+
+on:
+  schedule:
+    # DeepStateMap publishes at 03:00 UTC; run at 04:10 UTC to be safely after it
+    - cron: "10 4 * * *"
+  workflow_dispatch:        # lets you trigger a run by hand from the Actions tab
+  push:
+    branches: [main]
+    paths: ["build/**", ".github/workflows/update.yml"]
+
+permissions:
+  contents: write           # needed to commit the refreshed data back
+
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r build/requirements.txt
+
+      - name: Refresh data
+        run: python build/update.py
+
+      - name: Commit if anything changed
+        run: |
+          git config user.name  "front-line-bot"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/
+          if git diff --staged --quiet; then
+            echo "no change"
+          else
+            git commit -m "data: $(python -c "import json;print(json.load(open('data/meta.json'))['data_date'])")"
+            git push
+          fi
+
+  deploy:
+    needs: update
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read        # job-level permissions REPLACE the workflow-level
+      pages: write          # block, so checkout needs contents:read spelled out
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: "."
+      - id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>俄乌战线图层 · MapLibre 示例</title>
+<link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.css">
+<style>
+  html,body{margin:0;height:100%;font-family:"Noto Sans SC",system-ui,sans-serif}
+  #map{position:absolute;inset:0}
+  #hud{position:absolute;top:12px;left:12px;z-index:2;background:rgba(16,23,32,.92);
+       color:#E9F0F7;padding:12px 15px;border-radius:6px;font-size:13px;line-height:1.7;
+       box-shadow:0 6px 24px rgba(0,0,0,.35);min-width:220px}
+  #hud b{font-weight:900;font-size:20px;display:block;letter-spacing:.01em}
+  #hud .k{color:#8FA0B2;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+  #hud .ua{color:#7CC0FF;font-weight:700;margin-top:6px}
+  #hud .src{color:#5D6C7C;font-size:10.5px;margin-top:8px;font-weight:300}
+</style>
+</head>
+<body>
+<div id="map"></div>
+<div id="hud"><span class="k">Loading…</span></div>
+
+<script src="https://unpkg.com/maplibre-gl@4/dist/maplibre-gl.js"></script>
+<script type="module">
+import { UAFront } from "../ua-situation-layer.js";
+
+// Point FEED at your published data directory, e.g.
+//   https://<user>.github.io/<repo>/data
+const FEED = new URLSearchParams(location.search).get("feed") || "../../data";
+
+const map = new maplibregl.Map({
+  container: "map",
+  style: "https://demotiles.maplibre.org/style.json",   // swap for your own style
+  center: [35.0, 48.4],
+  zoom: 5.4,
+});
+
+const front = new UAFront({ feed: FEED });
+
+map.on("load", async () => {
+  await front.load();
+  front.addToMapLibre(map);          // adds fills + contact line, ids documented in the module
+  front.startAutoRefresh(6 * 3600e3);
+
+  front.on("update", s => {
+    document.getElementById("hud").innerHTML =
+      `<span class="k">俄军实际控制</span>
+       <b>${s.russianControlKm2.toLocaleString()} km²</b>
+       <span class="k">占乌国土 ${s.pctOfUkraine}%</span>
+       ${s.ukrainianControlInRussiaKm2 > 0
+          ? `<div class="ua">乌军控制俄境 ${s.ukrainianControlInRussiaKm2} km²</div>` : ""}
+       <div class="src">数据日期 ${s.date} · DeepStateMap / ISW</div>`;
+  });
+  front._emit("update", front.status());
+
+  // click a polygon to inspect it
+  map.on("click", "ua-front-russian-control", e => {
+    new maplibregl.Popup().setLngLat(e.lngLat)
+      .setHTML(`<div style="font:12px/1.6 sans-serif">俄军实际控制<br>
+        ${e.features[0].properties.area_km2.toLocaleString()} km²</div>`).addTo(map);
+  });
+  map.on("mouseenter", "ua-front-russian-control", () => map.getCanvas().style.cursor = "pointer");
+  map.on("mouseleave", "ua-front-russian-control", () => map.getCanvas().style.cursor = "");
+});
+</script>
+</body>
+</html>

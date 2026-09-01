@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="zh-Hans">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>俄乌战场态势图</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap">
+
+<style>
+/* --- three cartographic presets -------------------------------------------
+   A litho   : ivory staff map      B tactical : command display
+   C geo     : physical atlas
+   Default follows the viewer's system theme; the switcher overrides.       */
+:root, :root[data-style="litho"]{
+  --ground:#F2ECE0; --panel:#F8F4EA; --panel-2:#EBE4D6; --rule:#D7CCB7;
+  --ink:#22271F; --ink-2:#5F6558; --ink-3:#8C9184;
+  --sea:#C9D6DC; --sea1:#D5DFE4; --sea2:#DFE7EA; --sea3:#E8EDEE;
+  --neutral:#E4DCCB; --neutral-ink:#C1B69F;
+  --ua:#EDE6D6; --ua-edge:#6E6350;
+  --urban:#DCD2BC; --urban-a:.9;
+  --water:#BCCFD8; --riv1:#7FA0B2; --riv2:#93B0BF; --riv3:#A7BECB;
+  --rail:#B8AC94; --rail-a:.8; --obl:#C3B79E;
+  --ru:#7E2B29; --ru-fill:#A33F3C; --ru-hi:#B04A46; --front:#8E2B0C;
+  --uah:#3B6EA5; --uah-hi:#4A80BA; --uah-edge:#27507C;
+  --grey-zone:#B98A67;
+  --arrow-ru:#98211B; --arrow-ua:#1C5A93;
+  --arrow-ru-edge:#F6F0E7; --arrow-ua-edge:#F6F0E7; --hover:rgba(30,37,45,.10);
+  --shadow:0 1px 2px rgba(60,50,35,.09), 0 8px 26px rgba(60,50,35,.11);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-style]){
+    --ground:#080C11; --panel:#101720; --panel-2:#18212C; --rule:#26313F;
+    --ink:#E9F0F7; --ink-2:#8FA0B2; --ink-3:#5D6C7C;
+    --sea:#061420; --sea1:#08202F; --sea2:#0A2A3D; --sea3:#0C334A;
+    --neutral:#141A22; --neutral-ink:#252E39;
+    --ua:#17334C; --ua-edge:#7E8D9C;
+    --urban:#22496A; --urban-a:.55;
+    --water:#0E3A55; --riv1:#2C6A93; --riv2:#255C81; --riv3:#1E4C6C;
+    --rail:#2A3644; --rail-a:.75; --obl:#3B4756;
+    --ru:#B5484B; --ru-fill:#78191E; --ru-hi:#8C2429; --front:#F0742F;
+    --uah:#2E7FD6; --uah-hi:#3B93EE; --uah-edge:#7CC0FF;
+    --grey-zone:#8A4C34;
+    --arrow-ru:#FF6B64; --arrow-ua:#54AEFF;
+    --arrow-ru-edge:#2A0B0B; --arrow-ua-edge:#06182A; --hover:rgba(255,255,255,.075);
+    --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.5);
+  }
+}
+:root[data-style="tactical"]{
+  --ground:#080C11; --panel:#101720; --panel-2:#18212C; --rule:#26313F;
+  --ink:#E9F0F7; --ink-2:#8FA0B2; --ink-3:#5D6C7C;
+  --sea:#061420; --sea1:#08202F; --sea2:#0A2A3D; --sea3:#0C334A;
+  --neutral:#141A22; --neutral-ink:#252E39;
+  --ua:#17334C; --ua-edge:#7E8D9C;
+  --urban:#22496A; --urban-a:.55;
+  --water:#0E3A55; --riv1:#2C6A93; --riv2:#255C81; --riv3:#1E4C6C;
+  --rail:#2A3644; --rail-a:.75; --obl:#3B4756;
+  --ru:#B5484B; --ru-fill:#78191E; --ru-hi:#8C2429; --front:#F0742F;
+  --uah:#2E7FD6; --uah-hi:#3B93EE; --uah-edge:#7CC0FF;
+  --grey-zone:#8A4C34;
+  --arrow-ru:#FF6B64; --arrow-ua:#54AEFF;
+  --arrow-ru-edge:#2A0B0B; --arrow-ua-edge:#06182A; --hover:rgba(255,255,255,.075);
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.5);
+}
+:root[data-style="geo"]{
+  --ground:#EFEFE8; --panel:#F6F6F0; --panel-2:#E7E7DD; --rule:#CFCEBE;
+  --ink:#1F2A22; --ink-2:#5A6559; --ink-3:#8A9287;
+  --sea:#8FB4C4; --sea1:#A6C4D1; --sea2:#BCD5DE; --sea3:#D2E3E9;
+  --neutral:#DFDCCC; --neutral-ink:#BEB9A5;
+  --ua:#E6E4D2; --ua-edge:#5E6A57;
+  --urban:#CFC9B2; --urban-a:.95;
+  --water:#9BBECD; --riv1:#5E93AC; --riv2:#79A6BB; --riv3:#94B9C9;
+  --rail:#A8A48F; --rail-a:.8; --obl:#B6B29B;
+  --ru:#7C2F2A; --ru-fill:#B0524C; --ru-hi:#BC5F58; --front:#A33608;
+  --uah:#3D77AE; --uah-hi:#4C88C1; --uah-edge:#26527E;
+  --grey-zone:#C39472;
+  --arrow-ru:#9E2B23; --arrow-ua:#1E5F98;
+  --arrow-ru-edge:#F4F4EC; --arrow-ua-edge:#F4F4EC; --hover:rgba(30,42,34,.10);
+  --shadow:0 1px 2px rgba(40,45,35,.08), 0 8px 26px rgba(40,45,35,.10);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0; background:var(--ground); color:var(--ink);
+  font-family:"Noto Sans SC",system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased; overflow:hidden;
+}
+.lat{font-family:"Noto Sans SC",system-ui,sans-serif}
+.mono{font-family:"Noto Sans SC",system-ui,sans-serif; font-variant-numeric:tabular-nums}
+.eyebrow{
+  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:600;
+  font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3);
+}
+
+#app{display:grid; grid-template-columns:272px 1fr; grid-template-rows:1fr 132px; height:100vh}
+
+/* ---- left rail ---- */
+#rail{
+  grid-row:1 / span 2; background:var(--panel); border-right:1px solid var(--rule);
+  display:flex; flex-direction:column; overflow-y:auto; z-index:5;
+}
+.rail-pad{padding:16px 18px}
+#brand{border-bottom:1px solid var(--rule)}
+#brand h1{
+  margin:6px 0 2px; font-size:21px; font-weight:900; letter-spacing:.01em;
+  line-height:1.25; text-wrap:balance;
+}
+#brand .sub{font-size:12.5px; font-weight:100; color:var(--ink-2); letter-spacing:.03em}
+
+.group{border-bottom:1px solid var(--rule); padding:14px 18px}
+.group h2{margin:0 0 10px; font-size:11px; font-weight:600; letter-spacing:.16em;
+  text-transform:uppercase; color:var(--ink-3);
+  font-family:"Noto Sans SC",system-ui,sans-serif}
+
+.tog{display:flex; align-items:center; gap:9px; padding:5px 0; cursor:pointer; user-select:none}
+.tog input{position:absolute; opacity:0; width:0; height:0}
+.box{width:15px; height:15px; border:1.5px solid var(--ink-3); border-radius:3px;
+  flex:0 0 auto; position:relative; transition:background .12s,border-color .12s}
+.tog input:checked + .box{background:var(--front); border-color:var(--front)}
+.tog input:checked + .box::after{content:""; position:absolute; left:4px; top:1px;
+  width:4px; height:8px; border:solid #fff; border-width:0 2px 2px 0; transform:rotate(42deg)}
+.tog input:focus-visible + .box{outline:2px solid var(--front); outline-offset:2px}
+.tog span.lbl{font-size:13px; font-weight:400; color:var(--ink)}
+.tog .sw{width:11px;height:11px;border-radius:2px;flex:0 0 auto}
+
+#basemaps{display:grid; grid-template-columns:1fr; gap:5px}
+.bm{border:1px solid var(--rule); background:var(--panel-2); color:var(--ink-2);
+  border-radius:4px; padding:6px 8px; font-size:11.5px; font-weight:400; cursor:pointer;
+  text-align:left; font-family:"Noto Sans SC",system-ui,sans-serif;
+  transition:background .13s,color .13s}
+.bm:hover{color:var(--ink)}
+.bm[aria-pressed="true"]{background:var(--front); color:#fff; border-color:var(--front)}
+.bm:focus-visible{outline:2px solid var(--front); outline-offset:2px}
+#bmNote{font-size:11px; font-weight:100; line-height:1.6; color:var(--ink-3); margin-top:8px}
+#attrib{position:absolute; right:10px; bottom:8px; font-size:10.5px; font-weight:400;
+  color:var(--ink-2); background:color-mix(in srgb, var(--panel) 82%, transparent);
+  padding:3px 8px; border-radius:3px; pointer-events:none; z-index:6}
+#styles{display:grid; grid-template-columns:1fr 1fr; gap:5px}
+.sty{border:1px solid var(--rule); background:var(--panel-2); color:var(--ink-2);
+  border-radius:4px; padding:6px 4px; font-size:11.5px; font-weight:400; cursor:pointer;
+  font-family:"Noto Sans SC",sans-serif; transition:background .13s,color .13s}
+.sty:hover{color:var(--ink)}
+.sty[aria-pressed="true"]{background:var(--front); color:#fff; border-color:var(--front)}
+.sty:focus-visible{outline:2px solid var(--front); outline-offset:2px}
+.legend-row{display:flex; align-items:center; gap:9px; padding:4px 0; font-size:12.5px; font-weight:400}
+.chip{width:22px; height:12px; border-radius:2px; flex:0 0 auto}
+.chip.line{height:0; border-top:3px solid}
+
+#sources{padding:14px 18px 20px; font-size:11.5px; font-weight:100; line-height:1.8; color:var(--ink-3)}
+#sources a{color:var(--ink-2)}
+#sources strong{font-weight:700; color:var(--ink-2)}
+#sources summary{cursor:pointer; color:var(--ink-2); font-size:11.5px;
+  letter-spacing:.1em; text-transform:uppercase;
+  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:600}
+
+/* ---- map ---- */
+#stage{position:relative; overflow:hidden; background:var(--sea)}
+#map{width:100%; height:100%; display:block; cursor:grab; touch-action:none}
+#map.drag{cursor:grabbing}
+
+#readout{
+  position:absolute; top:16px; right:16px; width:316px; max-height:calc(100% - 32px);
+  overflow-y:auto; background:var(--panel); border:1px solid var(--rule);
+  border-radius:6px; box-shadow:var(--shadow); padding:16px 18px 17px;
+}
+#readout::before{content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
+  border-radius:6px 0 0 6px; background:var(--front); opacity:.9}
+#rDate{font-size:29px; font-weight:900; letter-spacing:.02em; margin:3px 0 0}
+#rSrc{font-size:10.5px; letter-spacing:.13em; text-transform:uppercase;
+  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:600}
+#rSrc.schem{color:var(--front)} #rSrc.meas{color:var(--ua-edge)}
+#rCap{font-size:13.5px; font-weight:100; line-height:1.8; color:var(--ink); margin:11px 0 0}
+.statrow{display:flex; gap:18px; margin:14px 0 0; padding-top:13px; border-top:1px solid var(--rule)}
+.stat .v{font-size:27px; font-weight:900; color:var(--ru); line-height:1.05;
+  letter-spacing:-.01em}
+.stat .k{font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3);
+  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:600; margin-top:3px}
+#rGrey{font-size:12px; font-weight:100; color:var(--front); margin-top:9px; line-height:1.65}
+#rKur{font-size:13px; color:var(--uah-edge); margin-top:9px; line-height:1.65; font-weight:700}
+#rPanel{margin:13px 0 0; padding-top:12px; border-top:1px solid var(--rule)}
+#rPanel li{font-size:13px; font-weight:100; line-height:1.75; color:var(--ink-2); margin-bottom:4px}
+#rPanel ul{margin:7px 0 0; padding-left:15px}
+
+#zoomers{position:absolute; left:14px; top:14px; display:flex; flex-direction:column; gap:5px}
+.zbtn{width:32px; height:32px; border:1px solid var(--rule); background:var(--panel);
+  color:var(--ink-2); border-radius:5px; cursor:pointer; font-size:16px; line-height:1;
+  box-shadow:var(--shadow); font-family:"Noto Sans SC",system-ui,sans-serif;
+  transition:background .13s, color .13s, transform .13s}
+.zbtn:hover{color:var(--ink); transform:translateY(-1px)}
+.zbtn:hover{background:var(--panel-2)}
+.zbtn:focus-visible{outline:2px solid var(--front); outline-offset:2px}
+.zbtn.sm{font-size:9.5px; letter-spacing:.06em}
+
+#tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
+  background:var(--panel); border:1px solid var(--rule); border-radius:4px;
+  padding:7px 10px; font-size:12px; box-shadow:var(--shadow); z-index:9; white-space:nowrap}
+#tip .t{font-weight:600} #tip .d{color:var(--ink-2); font-size:11.5px; margin-top:2px}
+
+/* ---- timeline ---- */
+#bar{grid-column:2; background:var(--panel); border-top:1px solid var(--rule);
+  display:grid; grid-template-columns:auto 1fr; gap:16px; padding:12px 20px 10px; align-items:center}
+#transport{display:flex; align-items:center; gap:9px}
+#play{width:38px; height:38px; border-radius:50%; border:1px solid var(--rule);
+  background:var(--front); color:#fff; cursor:pointer; font-size:14px; line-height:1;
+  display:grid; place-items:center}
+#play:focus-visible{outline:2px solid var(--front); outline-offset:3px}
+.spd{border:1px solid var(--rule); background:var(--panel); color:var(--ink-2);
+  border-radius:4px; padding:4px 7px; font-size:11px; cursor:pointer;
+  font-family:"Noto Sans SC",system-ui,sans-serif}
+.spd[aria-pressed="true"]{background:var(--front); color:#fff; border-color:var(--front)}
+
+#track{position:relative}
+#spark{width:100%; height:56px; display:block}
+#slider{width:100%; margin:4px 0 0; -webkit-appearance:none; appearance:none;
+  background:transparent; cursor:pointer; display:block}
+#slider::-webkit-slider-runnable-track{height:3px; border-radius:2px;
+  background:linear-gradient(90deg,var(--front) 0%,var(--front) var(--fill,100%),
+  var(--rule) var(--fill,100%),var(--rule) 100%)}
+#slider::-moz-range-track{height:3px; border-radius:2px; background:var(--rule)}
+#slider::-moz-range-progress{height:3px; border-radius:2px; background:var(--front)}
+#slider::-webkit-slider-thumb{-webkit-appearance:none; width:14px; height:14px;
+  border-radius:50%; background:var(--front); border:2px solid var(--panel);
+  box-shadow:0 1px 3px rgba(0,0,0,.4); margin-top:-5.5px}
+#slider::-moz-range-thumb{width:12px; height:12px; border-radius:50%;
+  background:var(--front); border:2px solid var(--panel)}
+#slider:focus-visible{outline:2px solid var(--front); outline-offset:4px}
+#ticks{display:flex; justify-content:space-between; font-size:10.5px; color:var(--ink-3);
+  font-family:"Noto Sans SC",system-ui,sans-serif; margin-top:1px}
+
+@media (max-width:980px){
+  #app{grid-template-columns:1fr; grid-template-rows:auto 1fr 132px}
+  #rail{grid-row:1; border-right:none; border-bottom:1px solid var(--rule);
+    flex-direction:row; overflow-x:auto; max-height:132px}
+  .group{border-bottom:none; border-right:1px solid var(--rule); min-width:200px}
+  #bar{grid-column:1}
+  #readout{position:static; width:auto; margin:0}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div id="app">
+  <aside id="rail">
+    <div id="brand" class="rail-pad">
+      <div class="eyebrow">Russo-Ukrainian War · Situation Map</div>
+      <h1>俄乌战场态势图</h1>
+      <div class="sub mono">2022.02.24 — 2026.08.26</div>
+    </div>
+
+    <div class="group">
+      <h2>底图</h2>
+      <div id="basemaps">
+        <button class="bm" data-b="vector" aria-pressed="true">矢量底图（内置）</button>
+        <button class="bm" data-b="osm" aria-pressed="false">OpenStreetMap</button>
+        <button class="bm" data-b="topo" aria-pressed="false">ArcGIS 地形</button>
+        <button class="bm" data-b="imagery" aria-pressed="false">ArcGIS 卫星影像</button>
+        <button class="bm" data-b="dark" aria-pressed="false">ArcGIS 深灰</button>
+        <button class="bm" data-b="light" aria-pressed="false">ArcGIS 浅灰</button>
+      </div>
+      <div id="bmNote"></div>
+    </div>
+
+    <div class="group">
+      <h2>制图样式</h2>
+      <div id="styles">
+        <button class="sty" data-s="auto" aria-pressed="true">跟随系统</button>
+        <button class="sty" data-s="litho" aria-pressed="false">石印参谋图</button>
+        <button class="sty" data-s="tactical" aria-pressed="false">战术情报屏</button>
+        <button class="sty" data-s="geo" aria-pressed="false">地理图集</button>
+      </div>
+    </div>
+
+    <div class="group">
+      <h2>图层</h2>
+      <label class="tog"><input type="checkbox" id="L_ru" checked><span class="box"></span><span class="lbl">俄军实际控制区</span></label>
+      <label class="tog"><input type="checkbox" id="L_front" checked><span class="box"></span><span class="lbl">接触线（战线）</span></label>
+      <label class="tog"><input type="checkbox" id="L_grey" checked><span class="box"></span><span class="lbl">过境／灰色地带</span></label>
+      <label class="tog"><input type="checkbox" id="L_kur" checked><span class="box"></span><span class="lbl">乌军控制俄境</span></label>
+      <label class="tog"><input type="checkbox" id="L_arrow" checked><span class="box"></span><span class="lbl">进攻方向</span></label>
+      <label class="tog"><input type="checkbox" id="L_obl" checked><span class="box"></span><span class="lbl">州界</span></label>
+      <label class="tog"><input type="checkbox" id="L_riv" checked><span class="box"></span><span class="lbl">水系与水库</span></label>
+      <label class="tog"><input type="checkbox" id="L_bath" checked><span class="box"></span><span class="lbl">海底等深带</span></label>
+      <label class="tog"><input type="checkbox" id="L_urb" checked><span class="box"></span><span class="lbl">城市建成区</span></label>
+      <label class="tog"><input type="checkbox" id="L_rail" checked><span class="box"></span><span class="lbl">铁路网</span></label>
+      <label class="tog"><input type="checkbox" id="L_city" checked><span class="box"></span><span class="lbl">城市</span></label>
+      <label class="tog"><input type="checkbox" id="L_town"><span class="box"></span><span class="lbl">前线城镇</span></label>
+    </div>
+
+    <div class="group">
+      <h2>图例</h2>
+      <div class="legend-row"><span class="chip" style="background:var(--ru-fill);border:1px solid var(--front); box-shadow:0 0 0 1px var(--panel)"></span>俄军实际控制</div>
+      <div class="legend-row"><span class="chip" style="background:repeating-linear-gradient(45deg,var(--grey-zone) 0 2px,transparent 2px 5px); border:1px solid var(--grey-zone)"></span>过境／灰色地带</div>
+      <div class="legend-row"><span class="chip" style="background:var(--uah);border:1px solid var(--uah-edge)"></span>乌军控制俄境</div>
+      <div class="legend-row"><span class="chip" style="background:var(--ua);border:1px solid var(--ua-edge)"></span>乌克兰控制</div>
+      <div class="legend-row"><span class="chip line" style="border-color:var(--front)"></span>接触线</div>
+      <div class="legend-row"><svg class="chip" viewBox="0 0 22 12" aria-hidden="true"><path d="M0 7.4 Q9 4.6 13 5.2 L13 2.2 L21.5 6.2 L13 10.2 L13 7.6 Q9 7.2 0 8.6 Z" fill="var(--arrow-ru)"/></svg>俄军主要进攻方向</div>
+      <div class="legend-row"><svg class="chip" viewBox="0 0 22 12" aria-hidden="true"><path d="M0 7.4 Q9 4.6 13 5.2 L13 2.2 L21.5 6.2 L13 10.2 L13 7.6 Q9 7.2 0 8.6 Z" fill="var(--arrow-ua)"/></svg>乌军反攻方向</div>
+    </div>
+
+    <div id="sources">
+      <details open>
+        <summary>数据与口径</summary>
+        <p style="margin:9px 0 0">
+          <strong style="color:var(--ink-2)">2024-07-08 起</strong>：DeepStateMap 逐日占领区实测数据（每日 03:00 UTC 更新）。<br>
+          <strong style="color:var(--ink-2)">此前</strong>：依据 ISW／Critical Threats 每日战况评估与公开战史，对 16 个关键日期的战线作示意性重建，精度约 5–10&nbsp;km，图中以斜纹与虚线标示。
+        </p>
+        <p style="margin:9px 0 0">
+          "过境／灰色地带"指 2022 年初俄军纵队通过但未建立稳定控制的区域（基辅、切尔尼戈夫、苏梅方向），单独计算，不计入实控面积。
+        </p>
+        <p style="margin:9px 0 0">
+          战役方向与部署重心依据 ISW 每日评估的方向级描述。乌军 2025 年 10 月已撤销"战役战术集群"（Khortytsia／Tavria）建制，故按<strong style="color:var(--ink-2)">作战方向</strong>而非旧番号标注。
+        </p>
+        <p style="margin:9px 0 0">克里米亚与塞瓦斯托波尔按国际公认边界计为乌克兰领土。面积百分比以乌克兰国土 603,548&nbsp;km² 为分母。</p>
+        <p style="margin:9px 0 0; color:var(--ink-3)">ISW 采用"最远推进范围"制图法，在渗透式作战下会系统性高估俄控范围；DeepState 出于行动保密会延迟公布乌军战果。两者对总面积的估计相差约 1,400&nbsp;km²。</p>
+      </details>
+    </div>
+  </aside>
+
+  <div id="stage">
+    <svg id="map"></svg>
+    <div id="zoomers">
+      <button class="zbtn" id="zin" aria-label="放大">+</button>
+      <button class="zbtn" id="zout" aria-label="缩小">−</button>
+      <button class="zbtn sm" id="zrst" aria-label="重置视图">RST</button>
+      <button class="zbtn sm" id="zdon" aria-label="缩放至顿巴斯">DON</button>
+    </div>
+    <div id="tip"></div>
+    <div id="attrib"></div>
+    <div id="readout">
+      <div id="rSrc" class="meas">DeepState 逐日实测</div>
+      <div id="rDate" class="mono">2026-08-26</div>
+      <p id="rCap"></p>
+      <div class="statrow">
+        <div class="stat"><div class="v mono" id="rKm">—</div><div class="k">km² 俄军控制</div></div>
+        <div class="stat"><div class="v mono" id="rPct">—</div><div class="k">占乌国土</div></div>
+      </div>
+      <div id="rGrey"></div>
+      <div id="rKur"></div>
+      <div id="rPanel"><div class="eyebrow">战役方向 · 部署重心</div><ul id="rList"></ul></div>
+    </div>
+  </div>
+
+  <div id="bar">
+    <div id="transport">
+      <button id="play" aria-label="播放">▶</button>
+      <button class="spd" data-s="1" aria-pressed="true">1×</button>
+      <button class="spd" data-s="2" aria-pressed="false">2×</button>
+      <button class="spd" data-s="4" aria-pressed="false">4×</button>
+    </div>
+    <div id="track">
+      <svg id="spark"></svg>
+      <input type="range" id="slider" min="0" max="0" value="0" step="1" aria-label="日期">
+      <div id="ticks"></div>
+    </div>
+  </div>
+</div>
+
+<script id="payload" type="application/json"></script>
+<script>
+/* Two build modes from one template:
+   - standalone: #payload carries the whole payload inline (offline, artifact)
+   - hosted:     #payload is empty, data is fetched from ./data/*.json
+   Override the data directory with ?data=<url-prefix> (CORS must allow it). */
+(async function(){
+"use strict";
+const RAW = document.getElementById("payload").textContent.trim();
+let DATA;
+if(RAW.charCodeAt(0) === 123){          // "{" -> payload is inlined
+  DATA = JSON.parse(RAW);
+} else {
+  const q = new URLSearchParams(location.search);
+  const dir = (q.get("data") || "data").replace(/\/$/, "");
+  const j = u => fetch(dir + "/" + u, {cache:"no-cache"}).then(r => {
+    if(!r.ok) throw new Error(u + ": HTTP " + r.status);
+    return r.json();
+  });
+  try {
+    const [base, hist, cur, ser] = await Promise.all(
+      [j("base.json"), j("history.json"), j("current.json"), j("series.json")]);
+    DATA = Object.assign({}, base, {
+      frames: hist.frames.concat(cur.frames)
+                 .sort((a, b) => a.d < b.d ? -1 : a.d > b.d ? 1 : 0),
+      series: ser.series, kseries: ser.kseries || [],
+    });
+  } catch(err){
+    document.body.innerHTML =
+      '<div style="padding:40px;font:14px/1.8 \'Noto Sans SC\',sans-serif">'+
+      '<b>数据加载失败</b><br>' + String(err) +
+      '<br><br>本页需要与 data/ 目录一起通过 HTTP 提供服务'+
+      '（直接双击打开本地文件会被浏览器的同源策略拦截）。</div>';
+    return;
+  }
+}
+const Q = DATA.Q, F = DATA.frames, B = DATA.base;
+const SVG = "http://www.w3.org/2000/svg";
+
+/* ---------- Albers equal-area conic, tuned to Ukraine ---------- */
+const R2 = Math.PI/180, P1 = 45*R2, P2 = 52*R2, P0 = 48.5*R2, L0 = 31*R2;
+const n = (Math.sin(P1)+Math.sin(P2))/2;
+const Cc = Math.cos(P1)**2 + 2*n*Math.sin(P1);
+const rho0 = Math.sqrt(Cc - 2*n*Math.sin(P0))/n;
+function albers(lon, lat){
+  const rho = Math.sqrt(Math.max(Cc - 2*n*Math.sin(lat*R2), 1e-9))/n;
+  const th = n*(lon*R2 - L0);
+  return [rho*Math.sin(th)*1000, (rho0 - rho*Math.cos(th))*-1000];
+}
+/* Web Mercator, scaled so its units match the Albers ones at Ukraine's latitude,
+   so switching projections keeps the same zoom feel. Tiles require this one. */
+const RM = 661.2;
+function mercator(lon, lat){
+  const y = Math.max(Math.min(lat, 85.05), -85.05);
+  return [lon*RM*Math.PI/180,
+          -RM*Math.log(Math.tan(Math.PI/4 + y*Math.PI/360))];
+}
+let PROJMODE = "albers";
+function proj(lon, lat){
+  return PROJMODE === "albers" ? albers(lon, lat) : mercator(lon, lat);
+}
+function decode(arr){            // delta ints -> projected path string
+  let x = arr[0], y = arr[1], p = proj(x/Q, y/Q), d = "M"+p[0].toFixed(1)+" "+p[1].toFixed(1);
+  for(let i=2;i<arr.length;i+=2){
+    x += arr[i]; y += arr[i+1];
+    p = proj(x/Q, y/Q);
+    d += "L"+p[0].toFixed(1)+" "+p[1].toFixed(1);
+  }
+  return d;
+}
+const ringsPath = rr => rr.map(decode).join("") + "Z";
+
+/* ---------- svg scaffold ---------- */
+const map = document.getElementById("map");
+const defs = document.createElementNS(SVG,"defs");
+defs.innerHTML =
+ '<pattern id="hz" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">'+
+   '<rect width="9" height="9" fill="var(--grey-zone)" opacity="0.16"/>'+
+   '<line x1="0" y1="0" x2="0" y2="9" stroke="var(--grey-zone)" stroke-width="1.9" opacity="0.8"/>'+
+ '</pattern>'+
+ '<filter id="softShadow" x="-25%" y="-25%" width="150%" height="150%">'+
+   '<feDropShadow dx="0" dy="1.2" stdDeviation="1.6" flood-color="#000" flood-opacity="0.42"/>'+
+ '</filter>'+
+ '<filter id="landShadow" x="-12%" y="-12%" width="124%" height="124%">'+
+   '<feDropShadow dx="0" dy="2.5" stdDeviation="4" flood-color="#000" flood-opacity="0.30"/>'+
+ '</filter>'+
+ '<linearGradient id="ruGrad" x1="0" y1="0" x2="0.35" y2="1">'+
+   '<stop offset="0%" stop-color="var(--ru-hi)"/><stop offset="100%" stop-color="var(--ru-fill)"/>'+
+ '</linearGradient>';
+map.appendChild(defs);
+const root = document.createElementNS(SVG,"g"); map.appendChild(root);
+function G(id){ const g = document.createElementNS(SVG,"g"); g.id = id; root.appendChild(g); return g; }
+const gNb = G("gNb"), gUa = G("gUa"), gRiv = G("gRiv"), gObl = G("gObl"),
+      gGrey = G("gGrey"), gRu = G("gRu"), gArrow = G("gArrow"), gCity = G("gCity");
+
+const SRC = [];
+function path(parent, d, attrs, src){
+  const p = document.createElementNS(SVG,"path");
+  p.setAttribute("d", d);
+  for(const k in attrs) p.setAttribute(k, attrs[k]);
+  parent.appendChild(p);
+  if(src){ p._src = src; SRC.push(p); }
+  return p;
+}
+
+/* bathymetry, land, hydrography, urban, rail */
+const gBath = document.createElementNS(SVG,"g"); gBath.id="gBath"; root.insertBefore(gBath, gNb);
+const SEAV = ["var(--sea1)","var(--sea2)","var(--sea3)","var(--sea3)"];
+(B.bathymetry||[]).slice().sort((a,b)=>b.d-a.d).forEach((o,i)=>
+  path(gBath, ringsPath(o.rings), {fill:SEAV[Math.min(i,SEAV.length-1)], stroke:"none"},
+       {k:"rings", v:o.rings}));
+
+B.neighbours.forEach(o => path(gNb, ringsPath(o.rings),
+  {fill:"var(--neutral)", stroke:"var(--neutral-ink)", "stroke-width":.7},
+  {k:"rings", v:o.rings}));
+path(gUa, ringsPath(B.ua), {fill:"var(--ua)", stroke:"none", filter:"url(#landShadow)"},
+     {k:"rings", v:B.ua});
+
+const gUrb  = G("gUrb"), gRail = G("gRail");
+root.insertBefore(gUrb,  gRiv); root.insertBefore(gRail, gRiv);
+(B.urban||[]).forEach(r => path(gUrb, ringsPath(r),
+  {fill:"var(--urban)", stroke:"none", opacity:"var(--urban-a)"}, {k:"rings", v:r}));
+(B.rail||[]).forEach(a => {
+  const p = path(gRail, decode(a), {fill:"none", stroke:"var(--rail)",
+    "stroke-width":.55, opacity:"var(--rail-a)"}, {k:"line", v:a});
+  p.dataset.bw = .55;
+});
+
+(B.rivers||[]).forEach(o => {
+  const r = o.r, w = r <= 7 ? 1.5 : r <= 9 ? 1.0 : .6;
+  const col = r <= 7 ? "var(--riv1)" : r <= 9 ? "var(--riv2)" : "var(--riv3)";
+  (o.l||[]).forEach(a => {
+    const p = path(gRiv, decode(a), {fill:"none", stroke:col,
+      "stroke-width":w, "stroke-linecap":"round"}, {k:"line", v:a});
+    p.dataset.bw = w;
+  });
+});
+const gLak = G("gLak"); root.insertBefore(gLak, gObl);
+(B.lakes||[]).forEach(r => path(gLak, ringsPath(r), {fill:"var(--water)", stroke:"none"},
+  {k:"rings", v:r}));
+
+/* oblasts (hover targets) */
+const oblPaths = {};
+B.oblasts.forEach(o => {
+  const p = path(gObl, ringsPath(o.rings),
+    {fill:"transparent", stroke:"var(--ua-edge)", "stroke-width":.55, opacity:.55},
+    {k:"rings", v:o.rings});
+  p.dataset.n = o.n; p.dataset.cn = o.cn; p.dataset.km2 = o.km2;
+  p.style.cursor = "crosshair";
+  oblPaths[o.n] = p;
+});
+path(gObl, ringsPath(B.ua), {fill:"none", stroke:"var(--ua-edge)", "stroke-width":1.6},
+     {k:"rings", v:B.ua});
+
+/* neighbour + sea labels */
+const gLbl = G("gLbl"); root.insertBefore(gLbl, gGrey);
+[["俄罗斯",40.6,50.4,13],["白俄罗斯",28.3,52.3,12],["波兰",22.6,50.8,12],
+ ["罗马尼亚",24.6,45.4,12],["摩尔多瓦",28.7,47.1,11],["匈牙利",21.6,47.4,11],
+ ["黑海",32.6,44.0,13],["亚速海",36.8,46.25,11]].forEach(([cn,lo,la,fs])=>{
+  const [x,y]=proj(lo,la); const t=document.createElementNS(SVG,"text");
+  t._ll=[lo,la];
+  t.setAttribute("x",x.toFixed(1)); t.setAttribute("y",y.toFixed(1));
+  t.setAttribute("text-anchor","middle"); t.setAttribute("font-size",fs);
+  t.setAttribute("fill","var(--ink-3)"); t.setAttribute("letter-spacing","0.14em");
+  t.setAttribute("font-weight", 100);
+  t.textContent=cn; t.dataset.fs=fs; gLbl.appendChild(t);
+});
+
+/* dynamic control layers */
+const pGreyF = path(gGrey, "", {fill:"url(#hz)", stroke:"var(--grey-zone)",
+  "stroke-width":1, "stroke-dasharray":"5 3"});
+const pRuF = path(gRu, "", {fill:"url(#ruGrad)", stroke:"var(--ru)",
+  "stroke-width":.7, "fill-opacity":.86});
+const gKur = G("gKur");
+const pKurF = path(gKur, "", {fill:"var(--uah)", stroke:"var(--uah-edge)",
+  "stroke-width":.8, "fill-opacity":.9});
+const pKurH = path(gKur, "", {fill:"none", stroke:"var(--uah-edge)", "stroke-width":6,
+  "stroke-linejoin":"round", "stroke-linecap":"round", opacity:.18});
+const pKurL = path(gKur, "", {fill:"none", stroke:"var(--uah-edge)", "stroke-width":2.1,
+  "stroke-linejoin":"round", "stroke-linecap":"round"});
+const gFront = G("gFront");
+const pRuH = path(gFront, "", {fill:"none", stroke:"var(--front)", "stroke-width":6,
+  "stroke-linejoin":"round", "stroke-linecap":"round", opacity:.15});
+const pRuL = path(gFront, "", {fill:"none", stroke:"var(--front)", "stroke-width":2.3,
+  "stroke-linejoin":"round", "stroke-linecap":"round"});
+
+/* cities */
+const cityEls = [];
+B.cities.forEach(c => {
+  const [x,y] = proj(c.x/Q, c.y/Q);
+  const g = document.createElementNS(SVG,"g");
+  g._ll = [c.x/Q, c.y/Q];
+  g.setAttribute("transform","translate("+x.toFixed(1)+","+y.toFixed(1)+")");
+  const r = c.t === 0 ? 3.1 : c.t === 1 ? 2.4 : 1.7;
+  const dot = document.createElementNS(SVG,"circle");
+  dot.setAttribute("r", r);
+  dot.setAttribute("fill", c.t === 0 ? "var(--panel)" : "var(--ink)");
+  dot.setAttribute("stroke", c.t === 0 ? "var(--ink)" : "var(--panel)");
+  dot.setAttribute("stroke-width", c.t === 0 ? 2.2 : 1.1);
+  const t = document.createElementNS(SVG,"text");
+  t.setAttribute("x", r+3.2); t.setAttribute("y", 3.4);
+  t.setAttribute("font-size", c.t===0 ? 12 : c.t===1 ? 10.5 : 9);
+  t.setAttribute("font-weight", c.t===0 ? 900 : 400);
+  t.setAttribute("fill","var(--ink)");
+  t.setAttribute("paint-order","stroke"); t.setAttribute("stroke","var(--ground)");
+  t.setAttribute("stroke-width", 2.6); t.setAttribute("stroke-linejoin","round");
+  t.textContent = c.cn;
+  g.appendChild(dot); g.appendChild(t); gCity.appendChild(g);
+  cityEls.push({g, t:c.t, txt:t, dot, len:c.cn.length, x, y});
+});
+
+/* ---------- view transform ---------- */
+let vx=0, vy=0, vk=1;
+let K0 = 1;
+function declutter(){
+  const boxes = arrowLabelBoxes.slice(), r = map.getBoundingClientRect();
+  const ranked = cityEls.slice().sort((a,b)=>a.t-b.t);
+  for(const c of ranked){
+    const tierOn = c.t <= 1 ? L_city.checked : L_town.checked;
+    if(!tierOn){ c.g.style.display = "none"; continue; }
+    c.g.style.display = "";
+    // minimum zoom before a label is allowed to appear at all
+    const need = c.t === 0 ? 0 : c.t === 1 ? K0*0.85 : K0*2.4;
+    if(vk < need){ c.txt.style.display = "none"; continue; }
+    const sx = vx + c.x*vk, sy = vy + c.y*vk;
+    if(sx < -60 || sy < -30 || sx > r.width+60 || sy > r.height+30){
+      c.txt.style.display = "none"; continue;
+    }
+    const fs = c.t===0 ? 12 : c.t===1 ? 10.5 : 9;
+    const w = c.len*fs + 12, hh = fs + 9;
+    const bx = [sx-4, sy-hh*0.62, sx+6+w, sy+hh*0.42];
+    let hit = false;
+    for(const b of boxes){
+      if(bx[0] < b[2] && bx[2] > b[0] && bx[1] < b[3] && bx[3] > b[1]){ hit = true; break; }
+    }
+    if(hit){ c.txt.style.display = "none"; }
+    else { c.txt.style.display = ""; boxes.push(bx); }
+  }
+}
+function apply(){
+  root.setAttribute("transform","translate("+vx+","+vy+") scale("+vk+")");
+  const s = 1/vk;
+  gCity.querySelectorAll("text").forEach(t=>t.setAttribute("transform","scale("+s+")"));
+  gCity.querySelectorAll("circle").forEach(c=>c.setAttribute("transform","scale("+s+")"));
+  gLbl.querySelectorAll("text").forEach(t=>t.setAttribute("font-size", (+t.dataset.fs)*s));
+  pRuL.setAttribute("stroke-width", 2.3*s);
+  pKurL.setAttribute("stroke-width", 2.1*s);
+  pKurH.setAttribute("stroke-width", 6*s);
+  pKurF.setAttribute("stroke-width", .8*s);
+  pRuH.setAttribute("stroke-width", 6*s);
+  pRuF.setAttribute("stroke-width", .7*s);
+  gObl.querySelectorAll("path").forEach(p=>{
+    const w = parseFloat(p.getAttribute("stroke-width"));
+    if(!p.dataset.bw) p.dataset.bw = w;
+    p.setAttribute("stroke-width", p.dataset.bw*s);
+  });
+  gRiv.querySelectorAll("path").forEach(p=>p.setAttribute("stroke-width", (+p.dataset.bw||1.4)*s));
+  gRail.querySelectorAll("path").forEach(p=>p.setAttribute("stroke-width", (+p.dataset.bw||.55)*s));
+  if(typeof idx === "number" && F[idx]) drawArrows(F[idx].ph);
+  if(BASEMAP !== "vector") updateTiles();
+  scaleBar();
+  declutter();
+}
+let BOX = null;
+function fit(pad){
+  const bb = gUa.getBBox(), r = map.getBoundingClientRect();
+  const right = r.width > 980 ? 346 : 0;          // readout panel
+  const W = r.width - right, H = r.height;
+  const k = Math.min(W/(bb.width+pad), H/(bb.height+pad));
+  vk = k; K0 = k; vx = W/2 - k*(bb.x+bb.width/2); vy = H/2 - k*(bb.y+bb.height/2);
+  apply();
+}
+function zoomTo(lon0,lat0,lon1,lat1){
+  const a = proj(lon0,lat1), b = proj(lon1,lat0);
+  const w = Math.abs(b[0]-a[0]), h = Math.abs(b[1]-a[1]);
+  const r = map.getBoundingClientRect();
+  vk = Math.min(r.width/(w*1.15), r.height/(h*1.15));
+  vx = r.width/2 - vk*(a[0]+b[0])/2; vy = r.height/2 - vk*(a[1]+b[1])/2;
+  apply();
+}
+addEventListener("resize", ()=>fit(40));
+
+let drag=null;
+map.addEventListener("pointerdown", e=>{ drag={x:e.clientX,y:e.clientY,vx,vy};
+  map.classList.add("drag"); map.setPointerCapture(e.pointerId); });
+map.addEventListener("pointermove", e=>{
+  if(drag){ vx = drag.vx + (e.clientX-drag.x); vy = drag.vy + (e.clientY-drag.y); apply(); return; }
+  hover(e);
+});
+map.addEventListener("pointerup", e=>{ drag=null; map.classList.remove("drag"); });
+map.addEventListener("pointerleave", ()=>{ tip.style.opacity=0; });
+map.addEventListener("wheel", e=>{
+  e.preventDefault();
+  const r = map.getBoundingClientRect(), mx = e.clientX-r.left, my = e.clientY-r.top;
+  const f = Math.exp(-e.deltaY*0.0016), nk = Math.max(0.35, Math.min(60, vk*f));
+  vx = mx - (mx-vx)*(nk/vk); vy = my - (my-vy)*(nk/vk); vk = nk; apply();
+}, {passive:false});
+function zoomBy(f){
+  const r = map.getBoundingClientRect(), mx=r.width/2, my=r.height/2;
+  const nk = Math.max(0.35, Math.min(60, vk*f));
+  vx = mx-(mx-vx)*(nk/vk); vy = my-(my-vy)*(nk/vk); vk = nk; apply();
+}
+zin.onclick=()=>zoomBy(1.45); zout.onclick=()=>zoomBy(1/1.45);
+zrst.onclick=()=>fit(40); zdon.onclick=()=>zoomTo(35.6,46.7,40.2,50.4);
+
+/* ---------- scale bar & north point ---------- */
+const KM_PER_UNIT = (function(){
+  const a = proj(30, 48.5), b = proj(31, 48.5);
+  return 73.6 / Math.hypot(b[0]-a[0], b[1]-a[1]);       // 1 deg lon at 48.5N
+})();
+const sbar = document.createElementNS(SVG,"g");
+sbar.setAttribute("id","sbar"); map.appendChild(sbar);
+function scaleBar(){
+  const r = map.getBoundingClientRect();
+  const pxPerKm = vk / KM_PER_UNIT;
+  const targets = [10,25,50,100,200,300,500,1000];
+  let km = targets[targets.length-1];
+  for(const t of targets){ if(t*pxPerKm >= 92){ km = t; break; } }
+  const w = km*pxPerKm;
+  const x = 20, y = r.height - 34;
+  sbar.innerHTML =
+    '<g font-family="Noto Sans SC, sans-serif">'+
+    '<line x1="'+x+'" y1="'+y+'" x2="'+(x+w)+'" y2="'+y+'" stroke="var(--ink-2)" stroke-width="1.6"/>'+
+    '<line x1="'+x+'" y1="'+(y-4)+'" x2="'+x+'" y2="'+(y+4)+'" stroke="var(--ink-2)" stroke-width="1.6"/>'+
+    '<line x1="'+(x+w/2)+'" y1="'+(y-3)+'" x2="'+(x+w/2)+'" y2="'+(y+3)+'" stroke="var(--ink-3)" stroke-width="1.2"/>'+
+    '<line x1="'+(x+w)+'" y1="'+(y-4)+'" x2="'+(x+w)+'" y2="'+(y+4)+'" stroke="var(--ink-2)" stroke-width="1.6"/>'+
+    '<text x="'+(x+w/2)+'" y="'+(y-11)+'" text-anchor="middle" font-size="10.5" fill="var(--ink-2)" letter-spacing="0.08em">'+km+' km</text>'+
+    '</g>'+
+    '<g transform="translate('+(x+w+38)+','+(y-2)+')">'+
+    '<path d="M0 -13 L4.4 4 L0 1.1 L-4.4 4 Z" fill="var(--ink-2)"/>'+
+    '<text x="0" y="15" text-anchor="middle" font-size="9.5" fill="var(--ink-3)" font-family="Noto Sans SC, sans-serif" letter-spacing="0.14em">N</text>'+
+    '</g>';
+}
+
+/* ---------- tooltip ---------- */
+const tip = document.getElementById("tip");
+let curOcc = {};
+function hover(e){
+  const t = e.target;
+  if(t.dataset && t.dataset.cn){
+    if(hoverEl && hoverEl !== t) hoverEl.setAttribute("fill","transparent");
+    hoverEl = t; t.setAttribute("fill","var(--hover)");
+    const pct = curOcc[t.dataset.n];
+    tip.innerHTML = '<div class="t">'+t.dataset.cn+'州 <span style="color:var(--ink-3)">'+
+      Number(t.dataset.km2).toLocaleString()+' km²</span></div>'+
+      '<div class="d">'+(pct!=null ? '俄军控制 '+pct+'%' : '未被占领')+'</div>';
+    const r = map.getBoundingClientRect();
+    tip.style.left = (e.clientX-r.left+14)+"px";
+    tip.style.top  = (e.clientY-r.top+14)+"px";
+    tip.style.opacity = 1;
+  } else {
+    tip.style.opacity = 0;
+    if(hoverEl){ hoverEl.setAttribute("fill","transparent"); hoverEl = null; }
+  }
+}
+let hoverEl = null;
+
+/* ---------- frame rendering ---------- */
+const CN_MON = d => d.slice(0,4)+"-"+d.slice(5,7)+"-"+d.slice(8,10);
+/* A tapered tactical arrow: thin at the tail, swelling into a barbed head. */
+function arrowShape(p0, p1, curve, W){
+  const dx = p1[0]-p0[0], dy = p1[1]-p0[1];
+  const c = [(p0[0]+p1[0])/2 - dy*curve, (p0[1]+p1[1])/2 + dx*curve];
+  const N = 64, pts = [];
+  for(let i=0;i<=N;i++){ const t=i/N, u=1-t;
+    pts.push([u*u*p0[0]+2*u*t*c[0]+t*t*p1[0], u*u*p0[1]+2*u*t*c[1]+t*t*p1[1]]); }
+  const cum=[0];
+  for(let i=1;i<=N;i++) cum.push(cum[i-1]+Math.hypot(pts[i][0]-pts[i-1][0], pts[i][1]-pts[i-1][1]));
+  const T = cum[N] || 1, Lh = Math.min(T*0.34, W*5.0), sH = Math.max(T-Lh, T*0.12);
+  const tanAt = i => {
+    const a = pts[Math.max(i-1,0)], b = pts[Math.min(i+1,N)];
+    let tx=b[0]-a[0], ty=b[1]-a[1]; const l=Math.hypot(tx,ty)||1; return [tx/l, ty/l];
+  };
+  const Lft=[], Rgt=[];
+  for(let i=0;i<=N;i++){
+    if(cum[i] > sH) break;
+    const f = cum[i]/sH, w = W*(0.30 + 0.70*Math.pow(f, 0.7)), t = tanAt(i);
+    Lft.push([pts[i][0]-t[1]*w, pts[i][1]+t[0]*w]);
+    Rgt.push([pts[i][0]+t[1]*w, pts[i][1]-t[0]*w]);
+  }
+  if(Lft.length < 2){ Lft.push(pts[0]); Rgt.push(pts[0]); }
+  let hi=1; while(hi<N && cum[hi] < sH) hi++;
+  const g = (sH-cum[hi-1])/Math.max(cum[hi]-cum[hi-1], 1e-6);
+  const bp = [pts[hi-1][0]+(pts[hi][0]-pts[hi-1][0])*g,
+              pts[hi-1][1]+(pts[hi][1]-pts[hi-1][1])*g];
+  let tx = pts[N][0]-bp[0], ty = pts[N][1]-bp[1];
+  const tl = Math.hypot(tx,ty)||1; tx/=tl; ty/=tl;
+  const nx=-ty, ny=tx, HW = W*2.25;
+  const bl=[bp[0]+nx*HW, bp[1]+ny*HW], br=[bp[0]-nx*HW, bp[1]-ny*HW];
+  const nl=[bp[0]+nx*W*0.98-tx*W*0.34, bp[1]+ny*W*0.98-ty*W*0.34];
+  const nr=[bp[0]-nx*W*0.98-tx*W*0.34, bp[1]-ny*W*0.98-ty*W*0.34];
+  const S = a => a.map(p=>p[0].toFixed(1)+" "+p[1].toFixed(1)).join("L");
+  return {d:"M"+S(Lft)+"L"+S([nl,bl,pts[N],br,nr])+"L"+S(Rgt.slice().reverse())+"Z",
+          tail:pts[0], tip:pts[N]};
+}
+
+let arrowLabelBoxes = [];
+function drawArrows(ph){
+  gArrow.textContent = "";
+  arrowLabelBoxes = [];
+  if(ph < 0 || !L_arrow.checked) return;
+  const s = 1/vk, W = 3.4*s, P = DATA.phases[ph];
+  P.arrows.forEach((a, i)=>{
+    const p0 = proj(a.f[0]/Q, a.f[1]/Q), p1 = proj(a.t[0]/Q, a.t[1]/Q);
+    const dx = p1[0]-p0[0], dy = p1[1]-p0[1], L = Math.hypot(dx,dy) || 1;
+    const MIN = 15;                                  // ~95 km in projected units
+    const t0 = L < MIN ? [p1[0]-dx/L*MIN, p1[1]-dy/L*MIN] : p0.slice();
+    const sh = arrowShape(t0, p1, (i % 2 ? 0.13 : -0.11), W);
+    path(gArrow, sh.d, {
+      fill: a.s==="ru" ? "var(--arrow-ru)" : "var(--arrow-ua)",
+      stroke: a.s==="ru" ? "var(--arrow-ru-edge)" : "var(--arrow-ua-edge)",
+      "stroke-width": 0.75*s, "stroke-linejoin":"round",
+      "fill-opacity": .94, filter:"url(#softShadow)"});
+    if(vk > K0*0.75 && a.lab){
+      const rightward = p1[0] > sh.tail[0];
+      const t = document.createElementNS(SVG,"text");
+      t.setAttribute("x", sh.tail[0].toFixed(1));
+      t.setAttribute("y", sh.tail[1].toFixed(1));
+      t.setAttribute("dy", (-7*s).toFixed(2));
+      t.setAttribute("font-size", 9.5*s);
+      t.setAttribute("font-weight", 700);
+      t.setAttribute("letter-spacing", (0.4*s).toFixed(2));
+      t.setAttribute("text-anchor", rightward ? "end" : "start");
+      t.setAttribute("fill", a.s==="ru" ? "var(--arrow-ru)" : "var(--arrow-ua)");
+      t.setAttribute("paint-order","stroke");
+      t.setAttribute("stroke","var(--ground)");
+      t.setAttribute("stroke-width", 3.4*s);
+      t.setAttribute("stroke-linejoin","round");
+      t.textContent = a.lab;
+      gArrow.appendChild(t);
+      const sx = vx + sh.tail[0]*vk, sy = vy + sh.tail[1]*vk, w = a.lab.length*9.5 + 10;
+      arrowLabelBoxes.push(rightward ? [sx-w, sy-20, sx+6, sy-1] : [sx-6, sy-20, sx+w, sy-1]);
+    }
+  });
+}
+
+let idx = F.length-1;
+function render(i){
+  idx = i; const f = F[i];
+  pRuF.setAttribute("d", ringsPath(f.ru||[]));
+  const fld = (f.fl||[]).map(decode).join("");
+  pRuL.setAttribute("d", fld); pRuH.setAttribute("d", fld);
+  pKurF.setAttribute("d", (f.kur||[]).length ? ringsPath(f.kur) : "");
+  const kfl = (f.kfl||[]).map(decode).join("");
+  pKurL.setAttribute("d", kfl); pKurH.setAttribute("d", kfl);
+  rKur.textContent = (f.kkm2||0) > 0
+    ? "乌军控制俄境 " + (f.kkm2||0).toLocaleString() + " km²（库尔斯克／别尔哥罗德）" : "";
+  pGreyF.setAttribute("d", (f.grey||[]).length ? ringsPath(f.grey) : "");
+  curOcc = f.occ || {};
+  rDate.textContent = CN_MON(f.d);
+  rSrc.textContent = f.src === "deepstate" ? "DeepState 逐日实测" : "示意性重建";
+  rSrc.className = f.src === "deepstate" ? "meas" : "schem";
+  rCap.textContent = f.cap;
+  rKm.textContent = f.km2.toLocaleString();
+  rPct.textContent = f.pct.toFixed(2)+"%";
+  rGrey.textContent = (f.grey_km2||0) > 500
+    ? "另有 "+(f.grey_km2||0).toLocaleString()+" km² 过境／灰色地带，未建立稳定控制" : "";
+  const P = f.ph >= 0 ? DATA.phases[f.ph] : null;
+  rList.innerHTML = P ? P.panel.map(x=>"<li>"+x+"</li>").join("") : "";
+  drawArrows(f.ph);
+  slider.value = i;
+  slider.style.setProperty("--fill", (100*i/Math.max(F.length-1,1)).toFixed(1)+"%");
+  marker();
+  toggles();
+}
+
+/* ---------- layer toggles ---------- */
+function toggles(){
+  gRu.style.display   = L_ru.checked ? "" : "none";
+  pRuF.style.display  = L_ru.checked ? "" : "none";
+  gFront.style.display= L_front.checked ? "" : "none";
+  gKur.style.display  = L_kur.checked ? "" : "none";
+  gBath.style.display = L_bath.checked ? "" : "none";
+  gUrb.style.display  = L_urb.checked ? "" : "none";
+  gRail.style.display = L_rail.checked ? "" : "none";
+  gLak.style.display  = (L_riv.checked && BASEMAP === "vector") ? "" : "none";
+  if(BASEMAP !== "vector"){
+    [gBath, gNb, gUa, gUrb, gRail, gRiv].forEach(g => g.style.display = "none");
+  }
+  gGrey.style.display = L_grey.checked ? "" : "none";
+  gArrow.style.display= L_arrow.checked ? "" : "none";
+  gObl.style.display  = L_obl.checked ? "" : "none";
+  gRiv.style.display  = L_riv.checked ? "" : "none";
+  declutter();
+}
+["L_ru","L_front","L_grey","L_arrow","L_obl","L_riv","L_city","L_town",
+ "L_kur","L_bath","L_urb","L_rail"].forEach(id=>{
+  document.getElementById(id).addEventListener("change", ()=>{ toggles(); drawArrows(F[idx].ph); });
+});
+
+/* ---------- sparkline ---------- */
+const spark = document.getElementById("spark");
+const S = DATA.series.map(o=>({t:Date.parse(o.d), km:o.km2, g:o.g, s:o.s}))
+                     .sort((a,b)=>a.t-b.t);
+const KS = (DATA.kseries||[]).map(o=>({t:Date.parse(o.d), km:o.km2}))
+                     .sort((a,b)=>a.t-b.t);
+const T0 = S[0].t, T1 = S[S.length-1].t;
+const KMIN = 35000, KMAX = 172000;
+let SW = 800, SH = 56, mk;
+function buildSpark(){
+  const r = spark.getBoundingClientRect(); SW = r.width || 800;
+  spark.setAttribute("viewBox", "0 0 "+SW+" "+SH);
+  const X = t => (t-T0)/(T1-T0)*SW;
+  const Y = k => SH - (k-KMIN)/(KMAX-KMIN)*(SH-6) - 3;
+  let env = "M"+X(S[0].t)+" "+Y(S[0].km+S[0].g);
+  S.forEach(p=> env += "L"+X(p.t).toFixed(1)+" "+Y(p.km+p.g).toFixed(1));
+  for(let i=S.length-1;i>=0;i--) env += "L"+X(S[i].t).toFixed(1)+" "+Y(S[i].km).toFixed(1);
+  const hs = S.filter(p=>p.s==="h"), dd = S.filter(p=>p.s==="d");
+  const kLine = KS.length ? KS.map((p,i)=>(i?"L":"M")+X(p.t).toFixed(1)+" "+
+                   Y(KMIN+p.km).toFixed(1)).join("") : "";
+  const kArea = KS.length ? kLine+"L"+X(KS[KS.length-1].t).toFixed(1)+" "+Y(KMIN)+
+                   "L"+X(KS[0].t).toFixed(1)+" "+Y(KMIN)+"Z" : "";
+  const ln = a => a.map((p,i)=>(i?"L":"M")+X(p.t).toFixed(1)+" "+Y(p.km).toFixed(1)).join("");
+  const area = ln(S)+"L"+X(T1)+" "+SH+"L"+X(T0)+" "+SH+"Z";
+  const yrs = [2023,2024,2025,2026].map(y=>X(Date.parse(y+"-01-01")));
+  const grid = yrs.map(x=>'<line x1="'+x.toFixed(1)+'" y1="2" x2="'+x.toFixed(1)+'" y2="'+SH+'" stroke="var(--rule)" stroke-width="1"/>').join("");
+  const splitX = X(Date.parse(DATA.split));
+  spark.innerHTML =
+    '<defs><linearGradient id="sg" x1="0" y1="0" x2="0" y2="1">'+
+      '<stop offset="0%" stop-color="var(--ru)" stop-opacity=".30"/>'+
+      '<stop offset="100%" stop-color="var(--ru)" stop-opacity=".04"/>'+
+    '</linearGradient></defs>'+
+    grid+
+    '<path d="'+area+'" fill="url(#sg)"/>'+
+    '<path d="'+env+'Z" fill="var(--grey-zone)" opacity=".32"/>'+
+    '<line x1="'+splitX.toFixed(1)+'" y1="0" x2="'+splitX.toFixed(1)+'" y2="'+SH+'" stroke="var(--ink-3)" stroke-width="1" stroke-dasharray="2 3"/>'+
+    '<path d="'+ln(hs)+'" fill="none" stroke="var(--front)" stroke-width="1.7" stroke-dasharray="4 3" stroke-linecap="round"/>'+
+    '<path d="'+ln(dd)+'" fill="none" stroke="var(--ru)" stroke-width="2.1" stroke-linecap="round"/>'+
+    (KS.length ? '<path d="'+kArea+'" fill="var(--uah)" opacity=".35"/>'+
+                 '<path d="'+kLine+'" fill="none" stroke="var(--uah-edge)" stroke-width="1.8"/>'+
+                 '<text x="'+X(KS[1].t).toFixed(1)+'" y="'+(SH-8)+'" font-size="9" '+
+                 'fill="var(--uah-edge)" font-family="Noto Sans SC, sans-serif">乌控俄境</text>' : '')+
+    '<text x="'+(splitX-6).toFixed(1)+'" y="11" text-anchor="end" font-size="9" fill="var(--ink-3)" font-family="Noto Sans SC, sans-serif" letter-spacing=".1em">示意重建</text>'+
+    '<text x="'+(splitX+6).toFixed(1)+'" y="11" font-size="9" fill="var(--ink-3)" font-family="Noto Sans SC, sans-serif" letter-spacing=".1em">逐日实测</text>'+
+    '<line id="mkl" x1="0" y1="0" x2="0" y2="'+SH+'" stroke="var(--front)" stroke-width="1.2" opacity=".75"/>'+
+    '<circle id="mkd" r="4" fill="var(--front)" stroke="var(--panel)" stroke-width="2"/>';
+  mk = {l:spark.querySelector("#mkl"), d:spark.querySelector("#mkd"), X, Y};
+  marker();
+}
+function marker(){
+  if(!mk) return;
+  const t = Date.parse(F[idx].d), x = mk.X(t), y = mk.Y(F[idx].km2);
+  mk.l.setAttribute("x1",x); mk.l.setAttribute("x2",x);
+  mk.d.setAttribute("cx",x); mk.d.setAttribute("cy",y);
+}
+addEventListener("resize", buildSpark);
+
+document.getElementById("ticks").innerHTML =
+  ["2022","2023","2024","2025","2026"].map(y=>"<span>"+y+"</span>").join("");
+
+/* ---------- transport ---------- */
+slider.max = F.length-1;
+slider.addEventListener("input", e=>{ stop(); render(+e.target.value); });
+let timer=null, spd=1;
+function stop(){ if(timer){clearInterval(timer); timer=null; play.textContent="▶"; play.setAttribute("aria-label","播放");} }
+play.onclick = ()=>{
+  if(timer) return stop();
+  if(idx >= F.length-1) idx = 0;
+  play.textContent="❚❚"; play.setAttribute("aria-label","暂停");
+  timer = setInterval(()=>{
+    if(idx >= F.length-1) return stop();
+    render(idx+1);
+  }, 420/spd);
+};
+document.querySelectorAll(".spd").forEach(b=>b.onclick=()=>{
+  spd = +b.dataset.s;
+  document.querySelectorAll(".spd").forEach(x=>x.setAttribute("aria-pressed", x===b));
+  if(timer){ stop(); play.click(); }
+});
+addEventListener("keydown", e=>{
+  if(e.key===" "){ e.preventDefault(); play.click(); }
+  if(e.key==="ArrowRight"){ stop(); render(Math.min(F.length-1, idx+1)); }
+  if(e.key==="ArrowLeft"){ stop(); render(Math.max(0, idx-1)); }
+});
+
+/* ---------- raster basemaps ---------- */
+const TILESETS = {
+  vector:  null,
+  osm:     {u:(z,x,y)=>`https://tile.openstreetmap.org/${z}/${x}/${y}.png`,
+            a:"© OpenStreetMap contributors", max:18, dark:false},
+  topo:    {u:(z,x,y)=>`https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}`,
+            a:"Esri, USGS, NOAA · ArcGIS World Topographic Map", max:17, dark:false},
+  imagery: {u:(z,x,y)=>`https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`,
+            a:"Esri, Maxar, Earthstar Geographics · ArcGIS World Imagery", max:17, dark:true},
+  dark:    {u:(z,x,y)=>`https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/${z}/${y}/${x}`,
+            a:"Esri, HERE, Garmin · ArcGIS Dark Gray Canvas", max:16, dark:true},
+  light:   {u:(z,x,y)=>`https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}`,
+            a:"Esri, HERE, Garmin · ArcGIS Light Gray Canvas", max:16, dark:false},
+};
+let BASEMAP = "vector";
+const gTiles = document.createElementNS(SVG,"g");
+gTiles.id = "gTiles"; root.insertBefore(gTiles, root.firstChild);
+const tileEls = new Map();
+let tileOK = 0, tileFail = 0, tileWarned = false;
+
+const lon2x = (lon,z) => Math.floor((lon+180)/360*Math.pow(2,z));
+const lat2y = (lat,z) => {
+  const r = lat*Math.PI/180;
+  return Math.floor((1 - Math.log(Math.tan(r)+1/Math.cos(r))/Math.PI)/2*Math.pow(2,z));
+};
+const x2lon = (x,z) => x/Math.pow(2,z)*360-180;
+const y2lat = (y,z) => {
+  const nn = Math.PI - 2*Math.PI*y/Math.pow(2,z);
+  return 180/Math.PI*Math.atan(0.5*(Math.exp(nn)-Math.exp(-nn)));
+};
+
+function updateTiles(){
+  const set = TILESETS[BASEMAP];
+  if(!set){ gTiles.textContent=""; tileEls.clear(); return; }
+  const r = map.getBoundingClientRect();
+  // world units per tile at zoom z = RM*2*PI / 2^z ; want ~256 css px
+  let z = Math.round(Math.log2(RM*2*Math.PI*vk/256));
+  z = Math.max(3, Math.min(set.max, z));
+  const w2lon = wx => wx/(RM*Math.PI/180);
+  const w2lat = wy => 90 - 360*Math.atan(Math.exp(wy/RM))/Math.PI;
+  const wx0 = (0 - vx)/vk, wx1 = (r.width - vx)/vk;
+  const wy0 = (0 - vy)/vk, wy1 = (r.height - vy)/vk;
+  const lonA = w2lon(wx0), lonB = w2lon(wx1);
+  const latA = w2lat(wy0), latB = w2lat(wy1);
+  const N = Math.pow(2,z);
+  const xa = Math.max(0, lon2x(Math.min(lonA,lonB), z) - 1);
+  const xb = Math.min(N-1, lon2x(Math.max(lonA,lonB), z) + 1);
+  const ya = Math.max(0, lat2y(Math.max(latA,latB), z) - 1);
+  const yb = Math.min(N-1, lat2y(Math.min(latA,latB), z) + 1);
+  if((xb-xa+1)*(yb-ya+1) > 900) return;              // guard runaway
+  const live = new Set();
+  for(let x=xa; x<=xb; x++) for(let y=ya; y<=yb; y++){
+    const key = z+"/"+x+"/"+y; live.add(key);
+    if(tileEls.has(key)) continue;
+    const p0 = mercator(x2lon(x,z),   y2lat(y,z));
+    const p1 = mercator(x2lon(x+1,z), y2lat(y+1,z));
+    const im = document.createElementNS(SVG,"image");
+    im.setAttribute("x", p0[0]); im.setAttribute("y", p0[1]);
+    im.setAttribute("width",  Math.abs(p1[0]-p0[0]) * 1.002);
+    im.setAttribute("height", Math.abs(p1[1]-p0[1]) * 1.002);
+    im.setAttribute("preserveAspectRatio","none");
+    im.addEventListener("load", ()=>{ tileOK++; }, {once:true});
+    im.addEventListener("error", ()=>{
+      tileFail++;
+      if(!tileWarned && tileOK === 0 && tileFail >= 4){
+        tileWarned = true;
+        bmNote.textContent = "此环境无法加载在线瓦片（网络策略限制），已退回矢量底图。"+
+          "把本页保存到本地用浏览器打开即可正常加载。";
+        setBasemap("vector", false);
+      }
+    }, {once:true});
+    im.setAttribute("href", set.u(z,x,y));
+    gTiles.appendChild(im);
+    tileEls.set(key, im);
+  }
+  for(const [k,el] of tileEls){
+    if(!live.has(k)){ el.remove(); tileEls.delete(k); }
+  }
+}
+
+function reproject(){
+  SRC.forEach(p => {
+    p.setAttribute("d", p._src.k === "rings" ? ringsPath(p._src.v) : decode(p._src.v));
+  });
+  cityEls.forEach(c => {
+    const ll = c.g._ll; if(!ll) return;
+    const [x,y] = proj(ll[0], ll[1]);
+    c.x = x; c.y = y;
+    c.g.setAttribute("transform","translate("+x.toFixed(1)+","+y.toFixed(1)+")");
+  });
+  gLbl.querySelectorAll("text").forEach(t => {
+    if(!t._ll) return;
+    const [x,y] = proj(t._ll[0], t._ll[1]);
+    t.setAttribute("x", x.toFixed(1)); t.setAttribute("y", y.toFixed(1));
+  });
+}
+
+function setBasemap(b, remember){
+  BASEMAP = b;
+  const set = TILESETS[b];
+  document.querySelectorAll(".bm").forEach(x =>
+    x.setAttribute("aria-pressed", String(x.dataset.b === b)));
+  const wantMerc = !!set;
+  if(wantMerc !== (PROJMODE === "mercator")){
+    PROJMODE = wantMerc ? "mercator" : "albers";
+    reproject();
+    fit(40);
+  }
+  // vector ground hides under a raster basemap; borders and control stay
+  const hide = !!set;
+  [gBath, gNb, gUa, gUrb, gRail, gRiv, gLak].forEach(g =>
+    g.style.display = hide ? "none" : "");
+  gTiles.style.display = set ? "" : "none";
+  tileOK = 0; tileFail = 0;
+  if(!set){ gTiles.textContent = ""; tileEls.clear(); }
+  attrib.textContent = set ? set.a : "";
+  if(!tileWarned) bmNote.textContent = set
+    ? "在线瓦片需要网络访问；若无法加载会自动退回矢量底图。"
+    : "矢量底图完全内置，离线可用。";
+  if(remember){ try{ localStorage.setItem("uawar-basemap", b); }catch(e){} }
+  updateTiles();
+  render(idx);
+  apply();
+}
+document.querySelectorAll(".bm").forEach(b => b.onclick = ()=> setBasemap(b.dataset.b, true));
+
+/* ---------- style switcher ---------- */
+const STY_KEY = "uawar-style";
+function setStyle(s, remember){
+  if(s === "auto") document.documentElement.removeAttribute("data-style");
+  else document.documentElement.setAttribute("data-style", s);
+  document.querySelectorAll(".sty").forEach(b =>
+    b.setAttribute("aria-pressed", String(b.dataset.s === s)));
+  if(remember){ try{ localStorage.setItem(STY_KEY, s); }catch(e){} }
+  requestAnimationFrame(()=>{ buildSpark(); });
+}
+document.querySelectorAll(".sty").forEach(b => b.onclick = ()=> setStyle(b.dataset.s, true));
+try{
+  const saved = localStorage.getItem(STY_KEY);
+  if(saved) setStyle(saved, false);
+}catch(e){}
+
+/* ---------- go ---------- */
+requestAnimationFrame(()=>{
+  fit(40); buildSpark(); render(F.length-1);
+  let b = "vector";
+  try{ b = localStorage.getItem("uawar-basemap") || "vector"; }catch(e){}
+  setBasemap(b, false);
+});
+})();
+</script>
+
+</body>
+</html>
