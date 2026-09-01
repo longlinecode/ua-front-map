@@ -7,7 +7,11 @@ on:
   workflow_dispatch:        # lets you trigger a run by hand from the Actions tab
   push:
     branches: [main]
-    paths: ["build/**", ".github/workflows/update.yml"]
+    paths:                  # 页面本身改了也要重新发布，否则 Pages 不会更新
+      - "build/**"
+      - "index.html"
+      - "embed/**"
+      - ".github/workflows/update.yml"
 
 permissions:
   contents: write           # needed to commit the refreshed data back
