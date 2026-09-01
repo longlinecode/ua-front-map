@@ -46,7 +46,13 @@ jobs:
             echo "no change"
           else
             git commit -m "data: $(python -c "import json;print(json.load(open('data/meta.json'))['data_date'])")"
-            git push
+            # A push-triggered run and the cron can overlap; whichever commits
+            # second gets its push rejected (non-fast-forward) and the whole
+            # workflow fails. Rebase onto whatever landed and retry.
+            for i in 1 2 3; do
+              git pull --rebase --autostash origin main && git push && break
+              echo "push retry $i"; sleep $((i * 5))
+            done
           fi
 
   deploy:

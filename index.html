@@ -4,80 +4,90 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>俄乌战场态势图</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap">
 
 <style>
+@font-face{font-family:"Noto Sans SC";font-style:normal;font-weight:100;font-display:swap;src:url("fonts/NotoSansSC-Thin.woff2") format("woff2")}
+@font-face{font-family:"Noto Sans SC";font-style:normal;font-weight:400;font-display:swap;src:url("fonts/NotoSansSC-Regular.woff2") format("woff2")}
+@font-face{font-family:"Noto Sans SC";font-style:normal;font-weight:700;font-display:swap;src:url("fonts/NotoSansSC-Bold.woff2") format("woff2")}
+@font-face{font-family:"Noto Sans SC";font-style:normal;font-weight:900;font-display:swap;src:url("fonts/NotoSansSC-Black.woff2") format("woff2")}
+
 /* --- three cartographic presets -------------------------------------------
    A litho   : ivory staff map      B tactical : command display
    C geo     : physical atlas
    Default follows the viewer's system theme; the switcher overrides.       */
 :root, :root[data-style="litho"]{
-  --ground:#F2ECE0; --panel:#F8F4EA; --panel-2:#EBE4D6; --rule:#D7CCB7;
-  --ink:#22271F; --ink-2:#5F6558; --ink-3:#8C9184;
-  --sea:#C9D6DC; --sea1:#D5DFE4; --sea2:#DFE7EA; --sea3:#E8EDEE;
-  --neutral:#E4DCCB; --neutral-ink:#C1B69F;
-  --ua:#CBE4CF; --ua-edge:#006C45;
-  --urban:#DCD2BC; --urban-a:.9;
-  --water:#BCCFD8; --riv1:#7FA0B2; --riv2:#93B0BF; --riv3:#A7BECB;
-  --rail:#B8AC94; --rail-a:.8; --obl:#C3B79E;
-  --ru:#A5002A; --ru-fill:#FA003F; --ru-hi:#FB245A; --front:#AF002C; --contact:#1B1E22;
-  --uah:#00BB77; --uah-hi:#2EC78F; --uah-edge:#007F51;
-  --grey-zone:#B08E76;
-  --arrow-ru:#DC0037; --arrow-ua:#00A86B;
-  --arrow-ru-edge:#F6F0E7; --arrow-ua-edge:#F6F0E7; --hover:rgba(30,37,45,.10);
-  --shadow:0 1px 2px rgba(60,50,35,.09), 0 8px 26px rgba(60,50,35,.11);
+  --ground:#F8F2EE; --panel:#FDF8F5; --panel-2:#EBE3DD; --rule:#D7CBC3;
+  --ink:#281C13; --ink-2:#695B4F; --ink-3:#94867B;
+  --sea:#97A294; --sea1:#A1AB9F; --sea2:#ACB4A9; --sea3:#B6BDB4;
+  --neutral:#EADFD7; --neutral-ink:#C9BBB0;
+  --ua:#C6EAD4; --ua-edge:#007639;
+  --urban:#DCD7C8; --urban-a:0.9;
+  --water:#94A48F; --riv1:#72876C; --riv2:#8A9B85; --riv3:#A2AF9E;
+  --rail:#CFC1B7; --rail-a:0.8; --obl:#CCBEB3;
+  --ru:#900E24; --ru-fill:#FA003F; --ru-hi:#D95A5E;
+  --front:#971829; --contact:#2C0A00;
+  --uah:#00BB77; --uah-hi:#40D690; --uah-edge:#007C3E;
+  --grey-zone:#B07847;
+  --arrow-ru:#B2363F; --arrow-ua:#007C3E;
+  --arrow-ru-edge:#FEF9F5; --arrow-ua-edge:#FEF9F5;
+  --hover:rgba(40,28,19,.10);
+  --shadow:0 1px 2px rgba(60,45,30,.09), 0 8px 26px rgba(60,45,30,.11);
 }
 @media (prefers-color-scheme: dark){
   :root:not([data-style]){
-    --ground:#080C11; --panel:#101720; --panel-2:#18212C; --rule:#26313F;
-    --ink:#E9F0F7; --ink-2:#8FA0B2; --ink-3:#5D6C7C;
-    --sea:#061420; --sea1:#08202F; --sea2:#0A2A3D; --sea3:#0C334A;
-    --neutral:#141A22; --neutral-ink:#252E39;
-    --ua:#062F25; --ua-edge:#4CCFA0;
-    --urban:#22496A; --urban-a:.55;
-    --water:#0E3A55; --riv1:#2C6A93; --riv2:#255C81; --riv3:#1E4C6C;
-    --rail:#2A3644; --rail-a:.75; --obl:#3B4756;
-    --ru:#FC6B90; --ru-fill:#FA003F; --ru-hi:#FB2E62; --front:#CD0034; --contact:#FFC94A;
-    --uah:#00BB77; --uah-hi:#2EC78F; --uah-edge:#73DAB4;
-    --grey-zone:#8A6A50;
-    --arrow-ru:#FB3869; --arrow-ua:#42CD9A;
-    --arrow-ru-edge:#2A0B0B; --arrow-ua-edge:#06182A; --hover:rgba(255,255,255,.075);
-    --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.5);
-  }
+  --ground:#1B0700; --panel:#281505; --panel-2:#342212; --rule:#463425;
+  --ink:#F5EDE6; --ink-2:#A99C91; --ink-3:#7A6C60;
+  --sea:#0C1409; --sea1:#111A0E; --sea2:#161F13; --sea3:#1B2418;
+  --neutral:#281C13; --neutral-ink:#413226;
+  --ua:#004425; --ua-edge:#37CF8A;
+  --urban:#4B4223; --urban-a:0.55;
+  --water:#2D5321; --riv1:#517446; --riv2:#406336; --riv3:#305226;
+  --rail:#473A30; --rail-a:0.75; --obl:#594A3D;
+  --ru:#FF9292; --ru-fill:#FA003F; --ru-hi:#E36367;
+  --front:#A52834; --contact:#FFB657;
+  --uah:#00BB77; --uah-hi:#40D690; --uah-edge:#88F1B8;
+  --grey-zone:#8E5C30;
+  --arrow-ru:#EA696D; --arrow-ua:#49DC97;
+  --arrow-ru-edge:#160400; --arrow-ua-edge:#160400;
+  --hover:rgba(255,255,255,.075);
+  --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.5);
+}
 }
 :root[data-style="tactical"]{
-  --ground:#080C11; --panel:#101720; --panel-2:#18212C; --rule:#26313F;
-  --ink:#E9F0F7; --ink-2:#8FA0B2; --ink-3:#5D6C7C;
-  --sea:#061420; --sea1:#08202F; --sea2:#0A2A3D; --sea3:#0C334A;
-  --neutral:#141A22; --neutral-ink:#252E39;
-  --ua:#062F25; --ua-edge:#4CCFA0;
-  --urban:#22496A; --urban-a:.55;
-  --water:#0E3A55; --riv1:#2C6A93; --riv2:#255C81; --riv3:#1E4C6C;
-  --rail:#2A3644; --rail-a:.75; --obl:#3B4756;
-  --ru:#FC6B90; --ru-fill:#FA003F; --ru-hi:#FB2E62; --front:#CD0034; --contact:#FFC94A;
-  --uah:#00BB77; --uah-hi:#2EC78F; --uah-edge:#73DAB4;
-  --grey-zone:#8A6A50;
-  --arrow-ru:#FB3869; --arrow-ua:#42CD9A;
-  --arrow-ru-edge:#2A0B0B; --arrow-ua-edge:#06182A; --hover:rgba(255,255,255,.075);
+  --ground:#1B0700; --panel:#281505; --panel-2:#342212; --rule:#463425;
+  --ink:#F5EDE6; --ink-2:#A99C91; --ink-3:#7A6C60;
+  --sea:#0C1409; --sea1:#111A0E; --sea2:#161F13; --sea3:#1B2418;
+  --neutral:#281C13; --neutral-ink:#413226;
+  --ua:#004425; --ua-edge:#37CF8A;
+  --urban:#4B4223; --urban-a:0.55;
+  --water:#2D5321; --riv1:#517446; --riv2:#406336; --riv3:#305226;
+  --rail:#473A30; --rail-a:0.75; --obl:#594A3D;
+  --ru:#FF9292; --ru-fill:#FA003F; --ru-hi:#E36367;
+  --front:#A52834; --contact:#FFB657;
+  --uah:#00BB77; --uah-hi:#40D690; --uah-edge:#88F1B8;
+  --grey-zone:#8E5C30;
+  --arrow-ru:#EA696D; --arrow-ua:#49DC97;
+  --arrow-ru-edge:#160400; --arrow-ua-edge:#160400;
+  --hover:rgba(255,255,255,.075);
   --shadow:0 1px 2px rgba(0,0,0,.45), 0 10px 30px rgba(0,0,0,.5);
 }
 :root[data-style="geo"]{
-  --ground:#EFEFE8; --panel:#F6F6F0; --panel-2:#E7E7DD; --rule:#CFCEBE;
-  --ink:#1F2A22; --ink-2:#5A6559; --ink-3:#8A9287;
-  --sea:#8FB4C4; --sea1:#A6C4D1; --sea2:#BCD5DE; --sea3:#D2E3E9;
-  --neutral:#DFDCCC; --neutral-ink:#BEB9A5;
-  --ua:#C9E7D6; --ua-edge:#006C45;
-  --urban:#CFC9B2; --urban-a:.95;
-  --water:#9BBECD; --riv1:#5E93AC; --riv2:#79A6BB; --riv3:#94B9C9;
-  --rail:#A8A48F; --rail-a:.8; --obl:#B6B29B;
-  --ru:#A5002A; --ru-fill:#FA003F; --ru-hi:#FB245A; --front:#AF002C; --contact:#1B1E22;
-  --uah:#00BB77; --uah-hi:#2EC78F; --uah-edge:#007F51;
-  --grey-zone:#BA9478;
-  --arrow-ru:#DC0037; --arrow-ua:#00A86B;
-  --arrow-ru-edge:#F4F4EC; --arrow-ua-edge:#F4F4EC; --hover:rgba(30,42,34,.10);
-  --shadow:0 1px 2px rgba(40,45,35,.08), 0 8px 26px rgba(40,45,35,.10);
+  --ground:#F4EBE4; --panel:#F7F2EE; --panel-2:#E4DCD6; --rule:#D0C5BC;
+  --ink:#281C13; --ink-2:#695B4F; --ink-3:#94867B;
+  --sea:#889883; --sea1:#92A08E; --sea2:#9DA999; --sea3:#A8B1A5;
+  --neutral:#E7D8CC; --neutral-ink:#C3B4A9;
+  --ua:#B0E4C5; --ua-edge:#007639;
+  --urban:#D5D1C2; --urban-a:0.9;
+  --water:#94A48F; --riv1:#72876C; --riv2:#8A9B85; --riv3:#A2AF9E;
+  --rail:#C8BBB1; --rail-a:0.8; --obl:#C6B8AD;
+  --ru:#900E24; --ru-fill:#FA003F; --ru-hi:#D95A5E;
+  --front:#971829; --contact:#2C0A00;
+  --uah:#00BB77; --uah-hi:#40D690; --uah-edge:#007C3E;
+  --grey-zone:#B07847;
+  --arrow-ru:#B2363F; --arrow-ua:#007C3E;
+  --arrow-ru-edge:#F8F2EE; --arrow-ua-edge:#F8F2EE;
+  --hover:rgba(40,28,19,.10);
+  --shadow:0 1px 2px rgba(60,45,30,.09), 0 8px 26px rgba(60,45,30,.11);
 }
 *{box-sizing:border-box}
 html,body{height:100%}
@@ -89,7 +99,7 @@ body{
 .lat{font-family:"Noto Sans SC",system-ui,sans-serif}
 .mono{font-family:"Noto Sans SC",system-ui,sans-serif; font-variant-numeric:tabular-nums}
 .eyebrow{
-  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:600;
+  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:400;
   font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--ink-3);
 }
 
@@ -109,7 +119,7 @@ body{
 #brand .sub{font-size:12.5px; font-weight:100; color:var(--ink-2); letter-spacing:.03em}
 
 .group{border-bottom:1px solid var(--rule); padding:14px 18px}
-.group h2{margin:0 0 10px; font-size:11px; font-weight:600; letter-spacing:.16em;
+.group h2{margin:0 0 10px; font-size:11px; font-weight:400; letter-spacing:.16em;
   text-transform:uppercase; color:var(--ink-3);
   font-family:"Noto Sans SC",system-ui,sans-serif}
 
@@ -152,7 +162,7 @@ body{
 #sources strong{font-weight:700; color:var(--ink-2)}
 #sources summary{cursor:pointer; color:var(--ink-2); font-size:11.5px;
   letter-spacing:.1em; text-transform:uppercase;
-  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:600}
+  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:400}
 
 /* ---- map ---- */
 #stage{position:relative; overflow:hidden; background:var(--sea)}
@@ -168,14 +178,14 @@ body{
   border-radius:6px 0 0 6px; background:var(--front); opacity:.9}
 #rDate{font-size:29px; font-weight:900; letter-spacing:.02em; margin:3px 0 0}
 #rSrc{font-size:10.5px; letter-spacing:.13em; text-transform:uppercase;
-  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:600}
+  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:400}
 #rSrc.schem{color:var(--front)} #rSrc.meas{color:var(--ua-edge)}
 #rCap{font-size:13.5px; font-weight:100; line-height:1.8; color:var(--ink); margin:11px 0 0}
 .statrow{display:flex; gap:18px; margin:14px 0 0; padding-top:13px; border-top:1px solid var(--rule)}
 .stat .v{font-size:27px; font-weight:900; color:var(--ru); line-height:1.05;
   letter-spacing:-.01em}
 .stat .k{font-size:10.5px; letter-spacing:.11em; text-transform:uppercase; color:var(--ink-3);
-  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:600; margin-top:3px}
+  font-family:"Noto Sans SC",system-ui,sans-serif; font-weight:400; margin-top:3px}
 #rGrey{font-size:12px; font-weight:100; color:var(--front); margin-top:9px; line-height:1.65}
 #rKur{font-size:13px; color:var(--uah-edge); margin-top:9px; line-height:1.65; font-weight:700}
 #rPanel{margin:13px 0 0; padding-top:12px; border-top:1px solid var(--rule)}
@@ -195,7 +205,7 @@ body{
 #tip{position:absolute; pointer-events:none; opacity:0; transition:opacity .1s;
   background:var(--panel); border:1px solid var(--rule); border-radius:4px;
   padding:7px 10px; font-size:12px; box-shadow:var(--shadow); z-index:9; white-space:nowrap}
-#tip .t{font-weight:600} #tip .d{color:var(--ink-2); font-size:11.5px; margin-top:2px}
+#tip .t{font-weight:700} #tip .d{color:var(--ink-2); font-size:11.5px; margin-top:2px}
 
 /* ---- timeline ---- */
 #bar{grid-column:2; background:var(--panel); border-top:1px solid var(--rule);
