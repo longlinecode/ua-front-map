@@ -2,7 +2,7 @@
 <html lang="zh-Hans">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>俄乌战场态势图</title>
 
 <style>
@@ -279,11 +279,137 @@ html[dir="rtl"] .mono{direction:ltr}
 html[dir="rtl"] #slider{direction:ltr}
 html[dir="rtl"] #brand h1, html[dir="rtl"] #brand .sub{text-align:right}
 
+
+/* ══════════ mobile ══════════════════════════════════════════════════════
+   Below 820px the desktop grid is abandoned entirely. The map becomes the
+   whole viewport and the chrome floats above it, because on a 390pt screen
+   any layout that gives the map a *share* of the height leaves too little
+   map to read.                                                            */
+/* Width alone misses a landscape phone: 852x393 is wider than 820 but only
+   393 tall, where the desktop grid leaves the map 129px. Catch short viewports
+   too. */
+@media (max-width:820px), (max-height:560px) and (pointer:coarse){
+  /* 100dvh, not 100vh: iOS counts the collapsing toolbar in vh, which pushes
+     the bottom of the layout under it. dvh tracks the visible area. */
+  html,body{height:100dvh; overscroll-behavior:none}
+  #app{display:block; height:100dvh; position:relative}
+
+  #stage{position:fixed; inset:0; z-index:0}
+  #map{height:100%}
+
+  /* ── top bar: title + menu, nothing else ── */
+  #mtop{
+    position:fixed; top:0; left:0; right:0; z-index:30;
+    display:flex; align-items:center; gap:10px;
+    padding:calc(env(safe-area-inset-top) + 8px) 12px 8px;
+    background:color-mix(in srgb, var(--panel) 92%, transparent);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule);
+  }
+  #mtop .mt-title{
+    font-size:15px; font-weight:900; color:var(--ink); flex:1;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .mbtn{
+    min-width:44px; min-height:44px;            /* the 44px target minimum */
+    display:flex; align-items:center; justify-content:center;
+    border:1px solid var(--rule); background:var(--panel-2); color:var(--ink);
+    border-radius:9px; font-size:15px; font-weight:700; cursor:pointer;
+    font-family:"Noto Sans SC",system-ui,sans-serif; padding:0 12px;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .mbtn[aria-expanded="true"]{background:var(--front); color:#fff; border-color:var(--front)}
+
+  /* ── the rail becomes an off-canvas drawer ── */
+  #rail{
+    position:fixed; z-index:41; top:0; bottom:0; left:0;
+    width:min(86vw,340px); max-height:none; max-width:none;
+    flex-direction:column; overflow-y:auto; overflow-x:hidden;
+    border-right:1px solid var(--rule); border-bottom:none;
+    padding-top:calc(env(safe-area-inset-top) + 8px);
+    padding-bottom:calc(env(safe-area-inset-bottom) + 24px);
+    transform:translateX(-102%); transition:transform .24s ease;
+    box-shadow:var(--shadow);
+  }
+  html[dir="rtl"] #rail{left:auto; right:0; transform:translateX(102%);
+    border-right:none; border-left:1px solid var(--rule)}
+  body.drawer #rail{transform:none}
+  #scrim{
+    position:fixed; inset:0; z-index:40; background:rgba(0,0,0,.42);
+    opacity:0; pointer-events:none; transition:opacity .24s ease;
+  }
+  body.drawer #scrim{opacity:1; pointer-events:auto}
+  .group{border-bottom:1px solid var(--rule); border-right:none; min-width:0}
+
+  /* every control in the drawer gets a finger-sized target */
+  #rail .bm, #rail .sty, #rail .lng{min-height:44px; font-size:13.5px; padding:10px 8px}
+  #rail .tog{min-height:44px; align-items:center}
+  #langs{grid-template-columns:1fr 1fr}
+
+  /* ── readout becomes a bottom sheet, peeking by default ── */
+  #readout{
+    /* top:auto is load-bearing: the desktop rule sets top:16px, and on a fixed
+       element with a definite height an over-constrained top+bottom resolves in
+       favour of top — which pins the sheet 16px from the TOP and makes the peek
+       height meaningless. */
+    position:fixed; left:0; right:0; bottom:0; top:auto; z-index:25;
+    width:auto; margin:0; border-radius:14px 14px 0 0;
+    border:1px solid var(--rule); border-bottom:none;
+    padding:8px 16px calc(env(safe-area-inset-bottom) + 12px);
+    max-height:76dvh; overflow-y:auto; -webkit-overflow-scrolling:touch;
+    transform:translateY(calc(100% - var(--peek,118px)));
+    transition:transform .26s ease;
+  }
+  body.sheet #readout{transform:none}
+  #readout::before{display:none}            /* the left accent bar makes no sense here */
+  #sheetGrip{
+    display:block; width:40px; height:4px; border-radius:2px;
+    background:var(--rule); margin:2px auto 8px; flex:none;
+  }
+  #rDate{font-size:22px}
+  #rCap{font-size:13px}
+  .stat .v{font-size:23px}
+
+  /* ── timeline sits above the sheet peek ── */
+  #bar{
+    position:fixed; left:0; right:0; z-index:20;
+    bottom:var(--peek,118px);
+    height:auto; padding:8px 12px 10px; border-top:1px solid var(--rule);
+    background:color-mix(in srgb, var(--panel) 92%, transparent);
+    backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  }
+  #play{width:44px; height:44px}
+  .spd{min-width:44px; min-height:44px}
+  #slider{height:44px}                       /* the thumb stays small, the hit area does not */
+  #spark{height:34px}
+
+  /* zoom buttons: bigger, and out from under the top bar */
+  #zoomers{top:calc(env(safe-area-inset-top) + 78px)}
+  .zbtn{width:44px; height:44px; font-size:16px}
+
+  /* the hover tooltip is useless on touch; tap handling replaces it */
+  #tip{display:none}
+}
+
+/* very short screens (landscape phone): drop the sheet peek to a single line */
+@media (max-height:560px) and (pointer:coarse){
+  #readout{--peek:64px}
+  #bar{bottom:64px}
+}
+
 </style>
 
 </head>
 <body>
 <div id="app">
+  <div id="mtop" hidden>
+    <button class="mbtn" id="mMenu" aria-expanded="false" aria-controls="rail"
+            aria-label="Menu">☰</button>
+    <div class="mt-title" data-i18n="title">俄乌战场态势图</div>
+    <button class="mbtn" id="mSheet" aria-expanded="false" aria-controls="readout"
+            aria-label="Details">▤</button>
+  </div>
+  <div id="scrim" hidden></div>
   <aside id="rail">
     <div id="brand" class="rail-pad">
       <div class="eyebrow" data-i18n="eyebrow">Russo-Ukrainian War · Situation Map</div>
@@ -384,6 +510,7 @@ html[dir="rtl"] #brand h1, html[dir="rtl"] #brand .sub{text-align:right}
     <div id="tip"></div>
     <div id="attrib"></div>
     <div id="readout">
+      <div id="sheetGrip" hidden></div>
       <div id="rSrc" class="meas" data-i18n="src_meas_badge">DeepState 逐日实测</div>
       <div id="rDate" class="mono">2026-08-26</div>
       <p id="rCap"></p>
@@ -767,9 +894,15 @@ let BOX = null;
 function fit(pad){
   const bb = gUa.getBBox(), r = map.getBoundingClientRect();
   const right = r.width > 980 ? 346 : 0;          // readout panel
-  const W = r.width - right, H = r.height;
+  const mob = window.matchMedia("(max-width:820px), (max-height:560px) and (pointer:coarse)").matches;
+  const _t = document.getElementById("mtop"), _b = document.getElementById("bar");
+  const topPad = mob && _t && !_t.hidden ? _t.offsetHeight : 0;
+  const botPad = mob && _b
+    ? _b.offsetHeight + (parseFloat(getComputedStyle(_b).bottom) || 0) : 0;
+  const W = r.width - right, H = Math.max(120, r.height - topPad - botPad);
   const k = Math.min(W/(bb.width+pad), H/(bb.height+pad));
-  vk = k; K0 = k; vx = W/2 - k*(bb.x+bb.width/2); vy = H/2 - k*(bb.y+bb.height/2);
+  vk = k; K0 = k; vx = W/2 - k*(bb.x+bb.width/2);
+  vy = topPad + H/2 - k*(bb.y+bb.height/2);
   apply();
 }
 function zoomTo(lon0,lat0,lon1,lat1){
@@ -784,8 +917,9 @@ addEventListener("resize", ()=>fit(40));
 
 let drag=null;
 map.addEventListener("pointerdown", e=>{ drag={x:e.clientX,y:e.clientY,vx,vy};
-  map.classList.add("drag"); map.setPointerCapture(e.pointerId); });
+  map.classList.add("drag"); try{ map.setPointerCapture(e.pointerId); }catch(_){} });
 map.addEventListener("pointermove", e=>{
+  if(typeof pts !== "undefined" && pts.size > 1) return;   // a pinch, not a pan
   if(drag){ vx = drag.vx + (e.clientX-drag.x); vy = drag.vy + (e.clientY-drag.y); apply(); return; }
   hover(e);
 });
@@ -803,6 +937,121 @@ function zoomBy(f){
   vx = mx-(mx-vx)*(nk/vk); vy = my-(my-vy)*(nk/vk); vk = nk; apply();
 }
 zin.onclick=()=>zoomBy(1.45); zout.onclick=()=>zoomBy(1/1.45);
+
+/* ══════════ mobile behaviour ══════════════════════════════════════════ */
+const MOBILE = window.matchMedia("(max-width:820px)");
+const mtop = document.getElementById("mtop"),
+      scrim = document.getElementById("scrim"),
+      mMenu = document.getElementById("mMenu"),
+      mSheet = document.getElementById("mSheet"),
+      grip = document.getElementById("sheetGrip");
+
+function closeDrawer(){
+  document.body.classList.remove("drawer");
+  mMenu.setAttribute("aria-expanded", "false");
+}
+function toggleDrawer(){
+  const on = !document.body.classList.contains("drawer");
+  document.body.classList.toggle("drawer", on);
+  mMenu.setAttribute("aria-expanded", String(on));
+  if(on) document.body.classList.remove("sheet"), mSheet.setAttribute("aria-expanded","false");
+}
+function toggleSheet(force){
+  const on = force !== undefined ? force : !document.body.classList.contains("sheet");
+  document.body.classList.toggle("sheet", on);
+  mSheet.setAttribute("aria-expanded", String(on));
+  if(on) closeDrawer();
+}
+mMenu.addEventListener("click", toggleDrawer);
+mSheet.addEventListener("click", ()=>toggleSheet());
+scrim.addEventListener("click", closeDrawer);
+grip.addEventListener("click", ()=>toggleSheet());
+
+/* swipe the sheet down to collapse, up to expand */
+let shy = null;
+["readout"].forEach(id=>{
+  const el = document.getElementById(id);
+  el.addEventListener("touchstart", e=>{
+    if(el.scrollTop > 0) return;             // let it scroll its own content first
+    shy = e.touches[0].clientY;
+  }, {passive:true});
+  el.addEventListener("touchend", e=>{
+    if(shy === null) return;
+    const dy = e.changedTouches[0].clientY - shy;
+    if(Math.abs(dy) > 44) toggleSheet(dy < 0);
+    shy = null;
+  }, {passive:true});
+});
+
+function syncMobile(){
+  const m = MOBILE.matches;
+  mtop.hidden = !m; scrim.hidden = !m; grip.hidden = !m;
+  if(!m){ closeDrawer(); document.body.classList.remove("sheet"); }
+  fit(40);
+}
+MOBILE.addEventListener("change", syncMobile);
+
+/* ── pinch to zoom ─────────────────────────────────────────────────────
+   The existing pan uses a single captured pointer. Track a second one and,
+   while two are down, drive scale from the distance ratio and pan from the
+   midpoint — that is what makes a pinch feel anchored rather than jumpy. */
+const pts = new Map();
+let pinch = null;
+function pinchState(){
+  const [a, b] = [...pts.values()];
+  return {d: Math.hypot(a.x-b.x, a.y-b.y),
+          cx: (a.x+b.x)/2, cy: (a.y+b.y)/2};
+}
+map.addEventListener("pointerdown", e=>{
+  pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if(pts.size === 2){
+    drag = null; map.classList.remove("drag");
+    const s = pinchState(), r = map.getBoundingClientRect();
+    pinch = {d:s.d, cx:s.cx-r.left, cy:s.cy-r.top, vx, vy, vk};
+  }
+});
+map.addEventListener("pointermove", e=>{
+  if(!pts.has(e.pointerId)) return;
+  pts.set(e.pointerId, {x:e.clientX, y:e.clientY});
+  if(pinch && pts.size === 2){
+    const s = pinchState(), r = map.getBoundingClientRect();
+    const nk = Math.max(0.35, Math.min(60, pinch.vk * (s.d / pinch.d)));
+    const cx = s.cx - r.left, cy = s.cy - r.top;
+    vx = cx - (pinch.cx - pinch.vx) * (nk / pinch.vk);
+    vy = cy - (pinch.cy - pinch.vy) * (nk / pinch.vk);
+    vk = nk; apply();
+  }
+});
+function endPt(e){
+  pts.delete(e.pointerId);
+  if(pts.size < 2) pinch = null;
+}
+map.addEventListener("pointerup", endPt);
+map.addEventListener("pointercancel", endPt);
+
+/* double-tap to zoom in, two-finger tap to zoom out */
+let lastTap = 0;
+map.addEventListener("pointerup", e=>{
+  if(e.pointerType === "mouse" || pts.size) return;
+  const now = Date.now();
+  if(now - lastTap < 300){
+    const r = map.getBoundingClientRect();
+    const mx = e.clientX-r.left, my = e.clientY-r.top;
+    const nk = Math.max(0.35, Math.min(60, vk*1.8));
+    vx = mx-(mx-vx)*(nk/vk); vy = my-(my-vy)*(nk/vk); vk = nk; apply();
+    lastTap = 0;
+  } else lastTap = now;
+});
+
+/* on touch there is no hover, so a tap on an oblast shows its readout and a
+   tap on empty map dismisses it */
+map.addEventListener("pointerup", e=>{
+  if(e.pointerType === "mouse" || !MOBILE.matches || pts.size) return;
+  if(drag && (Math.abs(e.clientX-drag.x) > 6 || Math.abs(e.clientY-drag.y) > 6)) return;
+  const el = document.elementFromPoint(e.clientX, e.clientY);
+  if(el && el.dataset && el.dataset.n) toggleSheet(true);
+});
+
 zrst.onclick=()=>fit(40); zdon.onclick=()=>zoomTo(35.6,46.7,40.2,50.4);
 
 /* ---------- scale bar & north point ---------- */
@@ -1219,6 +1468,7 @@ try{
 /* ---------- go ---------- */
 requestAnimationFrame(()=>{
   fit(40); buildSpark(); render(F.length-1);
+  syncMobile();
   let b = "vector";
   try{ setLang(localStorage.getItem("uawar-lang") || "zh", false); }
   catch(e){ setLang("zh", false); }
