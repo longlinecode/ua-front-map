@@ -11,6 +11,11 @@ on:
       - "build/**"
       - "index.html"
       - "embed/**"
+      # the shaded-relief rasters are part of the published site: a commit that
+      # touched only assets/ used to produce no run and no error, leaving the
+      # live page serving the previous ones
+      - "assets/**"
+      - "README.md"
       - ".github/workflows/update.yml"
 
 permissions:

@@ -1,7 +1,7 @@
-# Russo-Ukrainian War · Situation Map
+# Russo-Ukrainian Front Line · Daily Map
 
-[![Hits](https://hits.sh/github.com/longlinecode/ua-front-map.svg?style=flat-square&label=repo%20views&color=b02a2a)](https://hits.sh/github.com/longlinecode/ua-front-map/)
-[![Update](https://github.com/longlinecode/ua-front-map/actions/workflows/update.yml/badge.svg)](https://github.com/longlinecode/ua-front-map/actions/workflows/update.yml)
+[![Hits](https://hits.sh/github.com/longlinecode/russo-ukrainian-front-daily.svg?style=flat-square&label=repo%20views&color=b02a2a)](https://hits.sh/github.com/longlinecode/russo-ukrainian-front-daily/)
+[![Update](https://github.com/longlinecode/russo-ukrainian-front-daily/actions/workflows/update.yml/badge.svg)](https://github.com/longlinecode/russo-ukrainian-front-daily/actions/workflows/update.yml)
 
 A daily-updating interactive map of the Russo-Ukrainian front line, plus a plain
 GeoJSON feed that any mapping application can load as a layer.
@@ -16,7 +16,7 @@ GeoJSON feed that any mapping application can load as a layer.
 
 GitHub Actions refreshes the data and republishes the site every day at 04:10 UTC.
 
-**Live:** https://longlinecode.github.io/ua-front-map/
+**Live:** https://longlinecode.github.io/russo-ukrainian-front-daily/
 
 ---
 
