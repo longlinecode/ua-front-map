@@ -7,7 +7,8 @@ A daily-updating interactive map of the Russo-Ukrainian front line, plus a plain
 GeoJSON feed that any mapping application can load as a layer.
 
 - **Web page** — `index.html`: the full interactive map (pan/zoom, a timeline back
-  to February 2022, 12 layers, 3 cartographic styles, 6 basemaps, 7 languages)
+  to February 2022, 13 layers over a Swiss-style shaded-relief ground, 3
+  cartographic styles, 6 basemaps, 7 languages)
 - **Data feed** — `data/latest.geojson`: today's Russian-controlled area, the line
   of contact, and Ukrainian-held Russian territory
 - **Layer adapter** — `embed/ua-situation-layer.js`: MapLibre / Mapbox / Leaflet /
@@ -161,6 +162,7 @@ A complete runnable example is in `embed/examples/maplibre.html`.
 | `data/current.json` | daily | Fortnightly frames from 2024-07-08 plus today |
 | `data/series.json` | daily | Daily area series (794 points and counting) |
 | `data/meta.json` | daily | Build timestamp, data date, current area, source list |
+| `assets/terrain-*.webp` | static | Pre-baked shaded relief, light and dark |
 
 ---
 
@@ -198,6 +200,27 @@ national scale, so geometry would necessarily overstate them.
 Crimea and Sevastopol are counted as Ukrainian territory per internationally
 recognised borders. Percentages use Ukraine's **603,548 km²** as the denominator.
 
+
+### The shaded relief
+
+`assets/terrain-light.webp` / `terrain-dark.webp` are baked offline, not computed
+in the browser: a multidirectional hillshade (four light sources, so slopes
+facing away from a single 315° sun do not go flat), a hypsometric tint and
+aerial perspective, rendered directly in the page's own Albers projection and
+clipped to Ukraine.
+
+Two consequences worth knowing if you fork this:
+
+- The raster is **projection-specific**. It is drawn in the same Albers the SVG
+  uses, so it cannot be pasted onto a Web Mercator basemap — the page hides the
+  layer whenever a tile basemap is selected, and you should too.
+- The hypsometric tint deliberately stays on the **green half** of the palette
+  ramp. Walking it toward the red end would have coloured the Carpathians the
+  same as Russian-controlled ground.
+
+Rebuild them with `python3 terrain_web.py` (needs the cached DEM in
+`build/dem_z8.npz`).
+
 ---
 
 ## 5 · Local development
@@ -223,6 +246,8 @@ The code is free to use. Please attribute the data to its sources:
 - Situation assessments © **Institute for the Study of War / Critical Threats Project**
 - Basemap: **Natural Earth** (public domain), **geoBoundaries** (CC BY 4.0),
   **GeoNames** (CC BY 4.0)
+- Elevation: **AWS Terrain Tiles** (Mapzen Terrarium encoding, over SRTM and
+  other public-domain sources)
 
 Attribution for the online tile basemaps (OpenStreetMap / ArcGIS) is displayed by
 the page automatically when they are in use.
