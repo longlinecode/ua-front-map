@@ -399,6 +399,49 @@ html[dir="rtl"] #brand h1, html[dir="rtl"] #brand .sub{text-align:right}
 
 </style>
 
+
+<!-- ─────────────── visitor analytics (optional) ───────────────────────────
+     Edit these two lines to switch provider. Leave PROVIDER empty and the
+     page makes no third-party request at all.
+
+       "cloudflare"  ID = the token from Cloudflare Web Analytics
+       "goatcounter" ID = "https://<yourname>.goatcounter.com/count"
+       "umami"       ID = your website id (add HOST below if self-hosted)
+       "plausible"   ID = the domain you registered
+
+     All four are cookieless and need no consent banner. None of them expose
+     raw visitor IPs — they resolve country server-side and discard the IP,
+     which is the correct behaviour for this map.
+-->
+<script>
+(function(){
+  var PROVIDER = "";      //  <-- set me
+  var ID       = "";      //  <-- set me
+  var HOST     = "";      //  only for a self-hosted umami/plausible
+
+  if(!PROVIDER || !ID) return;
+  var s = document.createElement("script");
+  s.defer = true;
+  if(PROVIDER === "cloudflare"){
+    s.src = "https://static.cloudflareinsights.com/beacon.min.js";
+    s.setAttribute("data-cf-beacon", JSON.stringify({token: ID}));
+  } else if(PROVIDER === "goatcounter"){
+    s.src = "https://gc.zgo.at/count.js";
+    s.setAttribute("data-goatcounter", ID);
+  } else if(PROVIDER === "umami"){
+    s.src = (HOST || "https://cloud.umami.is") + "/script.js";
+    s.setAttribute("data-website-id", ID);
+  } else if(PROVIDER === "plausible"){
+    s.src = (HOST || "https://plausible.io") + "/js/script.js";
+    s.setAttribute("data-domain", ID);
+  } else return;
+  // A blocked or slow beacon must never affect the map.
+  s.onerror = function(){};
+  document.head.appendChild(s);
+})();
+</script>
+<!-- ──────────────────────────────────────────────────────────────────────── -->
+
 </head>
 <body>
 <div id="app">

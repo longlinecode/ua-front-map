@@ -1,63 +1,79 @@
-# 俄乌战场态势图 · 自动更新版
+# Russo-Ukrainian War · Situation Map
 
-一个每天自动更新的俄乌战线交互式地图，外加一份可直接被其它地图应用当作图层加载的 GeoJSON feed。
+A daily-updating interactive map of the Russo-Ukrainian front line, plus a plain
+GeoJSON feed that any mapping application can load as a layer.
 
-- **网页**：`index.html` — 完整交互式态势图（缩放平移、时间轴回溯、12 个图层、3 套制图样式、6 种底图）
-- **数据 feed**：`data/latest.geojson` — 当日俄控区、接触线、乌军控制俄境三个要素
-- **图层适配器**：`embed/ua-situation-layer.js` — MapLibre / Mapbox / Leaflet / deck.gl / ArcGIS / Cesium
+- **Web page** — `index.html`: the full interactive map (pan/zoom, a timeline back
+  to February 2022, 12 layers, 3 cartographic styles, 6 basemaps, 7 languages)
+- **Data feed** — `data/latest.geojson`: today's Russian-controlled area, the line
+  of contact, and Ukrainian-held Russian territory
+- **Layer adapter** — `embed/ua-situation-layer.js`: MapLibre / Mapbox / Leaflet /
+  deck.gl / ArcGIS / Cesium
 
-数据每天 04:10 UTC 由 GitHub Actions 自动刷新并重新发布。
+GitHub Actions refreshes the data and republishes the site every day at 04:10 UTC.
+
+**Live:** https://longlinecode.github.io/ua-front-map/
 
 ---
 
-## 一、部署（约 5 分钟）
+## 1 · Deployment (about 5 minutes)
 
-1. 在 GitHub 新建一个仓库，把本目录全部内容 push 到 `main` 分支。
-2. **Settings → Pages → Build and deployment → Source** 选 **GitHub Actions**。
-3. **Settings → Actions → General → Workflow permissions** 选 **Read and write permissions**（工作流需要把刷新后的数据提交回仓库）。
-4. 到 **Actions** 标签页，手动跑一次 `Update front-line data`（`Run workflow`）验证。
+1. Create a GitHub repository and push the contents of this directory to `main`.
+2. **Settings → Pages → Build and deployment → Source** → **GitHub Actions**.
+3. **Settings → Actions → General → Workflow permissions** → **Read and write
+   permissions** (the workflow commits the refreshed data back to the repo).
+4. Open the **Actions** tab and run `Update front-line data` once by hand to verify.
 
-完成后：
+You then have:
 
-| 用途 | 地址 |
+| | |
 |---|---|
-| 网页 | `https://<用户名>.github.io/<仓库名>/` |
-| 数据 feed | `https://<用户名>.github.io/<仓库名>/data/latest.geojson` |
-| 构建状态 | `https://<用户名>.github.io/<仓库名>/data/meta.json` |
+| Web page | `https://<user>.github.io/<repo>/` |
+| Data feed | `https://<user>.github.io/<repo>/data/latest.geojson` |
+| Build status | `https://<user>.github.io/<repo>/data/meta.json` |
 
-页面和 feed 都是公开的，任何拿到链接的人都能访问，无需登录。GitHub Pages 对静态资源返回 `Access-Control-Allow-Origin: *`，所以你的应用可以跨域直接 fetch 这份 feed。
+Both the page and the feed are public — anyone with the link can open them, no
+login required. GitHub Pages serves static assets with
+`Access-Control-Allow-Origin: *`, so your own application can fetch the feed
+cross-origin.
 
-> **注意**：`index.html` 必须通过 HTTP 提供服务（它会 fetch `data/*.json`）。本地预览用 `python3 -m http.server 8000` 然后访问 `http://localhost:8000/`，直接双击打开文件会被同源策略拦住。
+> **Note:** `index.html` must be served over HTTP (it fetches `data/*.json`).
+> For a local preview run `python3 -m http.server 8000` and open
+> `http://localhost:8000/`; opening the file directly will be blocked by the
+> same-origin policy.
 
 ---
 
-## 二、接入到你自己的地图（situation room 作为一个图层）
+## 2 · Using it as a layer in your own map
 
-推荐架构不是嵌 iframe，而是**让你的地图直接消费这份 feed**。这样图层顺序、样式、交互、弹窗全部由你的应用控制。
+The recommended architecture is not an iframe but letting your map consume the
+feed directly, so layer order, styling, interaction and popups all stay under
+your control.
 
-### 最简：三行代码
+### Minimal: three lines
 
 ```js
-import { UAFront } from "https://<用户名>.github.io/<仓库名>/embed/ua-situation-layer.js";
+import { UAFront } from "https://<user>.github.io/<repo>/embed/ua-situation-layer.js";
 
-const front = new UAFront({ feed: "https://<用户名>.github.io/<仓库名>/data" });
+const front = new UAFront({ feed: "https://<user>.github.io/<repo>/data" });
 await front.load();
-front.addToMapLibre(map);        // 或 addToLeaflet(map, L) / deckLayers(GeoJsonLayer) / ...
+front.addToMapLibre(map);        // or addToLeaflet(map, L) / deckLayers(GeoJsonLayer) / ...
 ```
 
-### 它会创建的图层（id 固定，方便你排序）
+### Layers it creates (fixed ids, so you can order them)
 
-| 图层 id | 类型 | 含义 |
+| Layer id | Type | Meaning |
 |---|---|---|
-| `ua-front-russian-control` | fill | 俄军实际控制区 |
-| `ua-front-russian-control-outline` | line | 上者轮廓 |
-| `ua-front-ua-in-russia` | fill | 乌军控制的俄罗斯领土（库尔斯克／别尔哥罗德） |
-| `ua-front-ua-in-russia-outline` | line | 上者轮廓 |
-| `ua-front-contact-line` | line | **接触线**（已剔除海岸线与国际边界，只画真正的战线） |
+| `ua-front-russian-control` | fill | Russian-controlled area |
+| `ua-front-russian-control-outline` | line | its outline |
+| `ua-front-ua-in-russia` | fill | Ukrainian-held Russian territory (Kursk / Belgorod) |
+| `ua-front-ua-in-russia-outline` | line | its outline |
+| `ua-front-contact-line` | line | **the line of contact** — coastline and international border removed, so this is the fighting front only |
 
-插到你自己某个图层下面：`front.addToMapLibre(map, { before: "your-labels-layer" })`。
+Insert them beneath one of your own layers with
+`front.addToMapLibre(map, { before: "your-labels-layer" })`.
 
-### 读数与自动刷新
+### Readouts and auto-refresh
 
 ```js
 front.on("update", s => {
@@ -65,49 +81,49 @@ front.on("update", s => {
   // s.ukrainianControlInRussiaKm2, s.sources
   hud.textContent = `${s.russianControlKm2.toLocaleString()} km² (${s.pctOfUkraine}%)`;
 });
-front.startAutoRefresh(6 * 3600e3);   // 每 6 小时检查一次，数据日期变了才重绘
+front.startAutoRefresh(6 * 3600e3);   // check every 6h; redraws only if the data date changed
 ```
 
-### 各框架适配器
+### Framework adapters
 
 ```js
 front.addToMapLibre(map, { before });          // MapLibre GL
-front.addToMapbox(map, { before });            // Mapbox GL（同一套 API）
+front.addToMapbox(map, { before });            // Mapbox GL (same API)
 front.addToLeaflet(map, L, { pane });          // Leaflet
-front.deckLayers(GeoJsonLayer);                // deck.gl，返回图层数组由你渲染
+front.deckLayers(GeoJsonLayer);                // deck.gl — returns layers for you to render
 front.arcgisLayers({ GeoJSONLayer });          // ArcGIS Maps SDK for JavaScript
-await front.addToCesium(viewer, Cesium);       // CesiumJS（贴地）
+await front.addToCesium(viewer, Cesium);       // CesiumJS (clamped to ground)
 ```
 
-用别的东西？直接拿原始 GeoJSON：
+Using something else? Take the raw GeoJSON:
 
 ```js
 front.collection("russian_control")             // FeatureCollection
 front.collection("contact_line")
 front.collection("ukrainian_control_in_russia")
-front.data                                      // 三者合一的原始 FeatureCollection
+front.data                                      // all three, as one FeatureCollection
 ```
 
-完整可跑示例见 `embed/examples/maplibre.html`。
+A complete runnable example is in `embed/examples/maplibre.html`.
 
-### 不写代码的接法
+### Without writing any code
 
-`data/latest.geojson` 是标准 GeoJSON，可以直接：
+`data/latest.geojson` is standard GeoJSON, so it drops straight into:
 
-- ArcGIS Online / Experience Builder：**Add layer from URL** 填 feed 地址
-- QGIS：图层 → 添加图层 → 添加矢量图层 → 协议 → GeoJSON
-- Mapbox Studio / Felt / Kepler.gl：直接粘贴 URL
+- ArcGIS Online / Experience Builder — **Add layer from URL**
+- QGIS — Layer → Add Layer → Add Vector Layer → Protocol → GeoJSON
+- Mapbox Studio / Felt / Kepler.gl — paste the URL
 
 ---
 
-## 三、数据结构
+## 3 · Data structures
 
 ### `data/latest.geojson`
 
 ```jsonc
 {
   "type": "FeatureCollection",
-  "properties": { "generated": "<ISO 时间>", "data_date": "YYYY-MM-DD" },
+  "properties": { "generated": "<ISO timestamp>", "data_date": "YYYY-MM-DD" },
   "features": [
     { "properties": { "kind": "russian_control", "area_km2": 117027,
                       "pct_of_ukraine": 19.39, "source": "DeepStateMap" }, ... },
@@ -118,55 +134,77 @@ front.data                                      // 三者合一的原始 Feature
 }
 ```
 
-### 其它文件
+### Other files
 
-| 文件 | 更新 | 内容 |
+| File | Updated | Contents |
 |---|---|---|
-| `data/base.json` | 静态 | 底图：国界、州界、等深带、水系、水库、建成区、铁路、地名库、战役方向 |
-| `data/history.json` | 静态 | 2022-02-24 → 2024-07-07 的 16 个示意性重建帧 |
-| `data/current.json` | 每日 | 2024-07-08 至今的双周帧 + 当日帧 |
-| `data/series.json` | 每日 | 逐日面积序列（794 个点起） |
-| `data/meta.json` | 每日 | 构建时间、数据日期、当前面积、数据源清单 |
+| `data/base.json` | static | Basemap: international and oblast boundaries, bathymetry, rivers, reservoirs, built-up areas, railways, gazetteer, axes of advance |
+| `data/history.json` | static | 16 schematic reconstruction frames, 2022-02-24 → 2024-07-07 |
+| `data/current.json` | daily | Fortnightly frames from 2024-07-08 plus today |
+| `data/series.json` | daily | Daily area series (794 points and counting) |
+| `data/meta.json` | daily | Build timestamp, data date, current area, source list |
 
 ---
 
-## 四、数据来源与必须知道的偏差
+## 4 · Sources, and the biases you must know about
 
-**2024-07-08 至今**：DeepStateMap.Live 逐日占领区 GeoJSON（经 GitHub 镜像 `cyterat/deepstate-map-data` 获取，每日 03:00 UTC 更新）。本项目独立计算的面积与公开引用值偏差在 **0.05% 以内**。
+**From 2024-07-08:** DeepStateMap.Live daily occupied-area GeoJSON, obtained via
+the GitHub mirror `cyterat/deepstate-map-data` (updated 03:00 UTC daily). Areas
+computed independently here agree with published figures to within **0.05%**.
 
-**2022-02-24 — 2024-07-07**：没有可批量获取的高保真逐日数据，依据 ISW／Critical Threats 每日战况评估与公开战史重建了 16 个关键日期，**精度约 5–10 km**，页面上以斜纹与虚线区分。
+**2022-02-24 – 2024-07-07:** No high-fidelity daily data is available in bulk for
+this period, so 16 key dates were reconstructed from ISW / Critical Threats daily
+assessments and published war history. Accuracy is roughly **5–10 km**; these
+frames are drawn with hatching and dashed lines to distinguish them.
 
-**库尔斯克方向**：乌军控制的俄罗斯领土同样是示意性重建，**面积读数一律采用 ISW 的有出处数字**，不用几何面积（残余阵地只有几 km²，在国家尺度上是亚像素的，几何必然偏大）。
+**Kursk axis:** Ukrainian-held Russian territory is likewise a schematic
+reconstruction. **Area readouts always use ISW's sourced figures**, never the
+drawn geometry — the residual positions are only a few km², which is sub-pixel at
+national scale, so geometry would necessarily overstate them.
 
-### 使用这份数据前请注意
+### Read this before using the data
 
-- **ISW 采用"最远推进范围"制图法**——一块地进入地图后，除非有确凿证据证明俄军已撤出，否则一直保留。在渗透式作战下会**系统性高估**俄控范围。
-- **DeepState 出于行动保密延迟公布乌军战果**，近实时数据中乌控面积被系统性低估。
-- **两家对总面积的估计相差约 1,400 km²**。
-- **"渗透"不等于"控制"**——一个居民点可以被渗透数周而不易手。
-- **部分地段不存在连续战线**，画成一条清晰的线本身就是简化。
-- AI 伪造的"占领"视频已进入战场情报，地理定位画面不能自动视为可信证据。
+- **ISW maps the furthest extent of advance.** Once ground enters the map it stays
+  unless there is firm evidence of Russian withdrawal. Against infiltration
+  tactics this **systematically overstates** Russian control.
+- **DeepState delays publishing Ukrainian gains** for operational security, so
+  Ukrainian-held area is systematically understated in near-real-time data.
+- **The two differ by roughly 1,400 km²** on total area.
+- **Infiltration is not control.** A settlement can be infiltrated for weeks
+  without changing hands.
+- **Some sectors have no continuous front line at all.** Drawing one crisp line is
+  itself a simplification.
+- AI-fabricated "capture" videos have entered battlefield reporting; geolocated
+  footage can no longer be treated as self-evidently reliable.
 
-克里米亚与塞瓦斯托波尔按国际公认边界计为乌克兰领土。面积百分比以乌克兰国土 **603,548 km²** 为分母。
+Crimea and Sevastopol are counted as Ukrainian territory per internationally
+recognised borders. Percentages use Ukraine's **603,548 km²** as the denominator.
 
 ---
 
-## 五、本地开发
+## 5 · Local development
 
 ```bash
 pip install -r build/requirements.txt
-python build/update.py          # 刷新 data/
-python3 -m http.server 8000     # 然后打开 http://localhost:8000/
+python build/update.py          # refresh data/
+python3 -m http.server 8000     # then open http://localhost:8000/
 ```
 
-`build/update.py` 只依赖 `requests` / `shapely` / `pyproj`，跑一次约 1–2 分钟（首次会补齐面积序列，之后每天只增量拉一天）。静态输入在 `build/static/`，不需要 geopandas。
+`build/update.py` depends only on `requests` / `shapely` / `pyproj` and takes
+1–2 minutes (the first run backfills the area series; after that it fetches one
+day incrementally). Static inputs live in `build/static/`; geopandas is not
+required.
 
-## 六、许可与署名
+---
 
-代码可自由使用。数据请按来源署名：
+## 6 · Licence and attribution
 
-- 控制区数据 © **DeepStateMap.Live**
-- 战况评估 © **Institute for the Study of War / Critical Threats Project**
-- 底图 **Natural Earth**（公有领域）、**geoBoundaries**（CC BY 4.0）、**GeoNames**（CC BY 4.0）
+The code is free to use. Please attribute the data to its sources:
 
-在线瓦片底图（OpenStreetMap / ArcGIS）的署名由页面在使用时自动显示。
+- Control-area data © **DeepStateMap.Live**
+- Situation assessments © **Institute for the Study of War / Critical Threats Project**
+- Basemap: **Natural Earth** (public domain), **geoBoundaries** (CC BY 4.0),
+  **GeoNames** (CC BY 4.0)
+
+Attribution for the online tile basemaps (OpenStreetMap / ArcGIS) is displayed by
+the page automatically when they are in use.
