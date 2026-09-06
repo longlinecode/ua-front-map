@@ -1,5 +1,8 @@
 # Russo-Ukrainian War · Situation Map
 
+[![Hits](https://hits.sh/github.com/longlinecode/ua-front-map.svg?style=flat-square&label=repo%20views&color=b02a2a)](https://hits.sh/github.com/longlinecode/ua-front-map/)
+[![Update](https://github.com/longlinecode/ua-front-map/actions/workflows/update.yml/badge.svg)](https://github.com/longlinecode/ua-front-map/actions/workflows/update.yml)
+
 A daily-updating interactive map of the Russo-Ukrainian front line, plus a plain
 GeoJSON feed that any mapping application can load as a layer.
 
@@ -41,6 +44,21 @@ cross-origin.
 > For a local preview run `python3 -m http.server 8000` and open
 > `http://localhost:8000/`; opening the file directly will be blocked by the
 > same-origin policy.
+
+### Visitor counting
+
+The page shows a total-visit figure in its "Data & methodology" footer, counted
+via [Abacus](https://abacus.jasoncameron.dev/) — no account, no cookies, one
+increment per browser session. Read it as an order of magnitude, not a metric:
+it counts crawlers and link previews, keeps no history, and free counters of
+this class do disappear (countapi.xyz no longer resolves; counterapi.dev v1
+returns 410 Gone). Abacus also expires an idle key after ~168 days.
+
+For a figure worth reporting — total visits *and* a country breakdown *and* a
+time series — set `PROVIDER` and `ID` at the top of `index.html` to a
+[Cloudflare Web Analytics](https://developers.cloudflare.com/web-analytics/)
+token. That block also accepts GoatCounter, Umami or Plausible; leave it empty
+and the page makes no third-party analytics request at all.
 
 ---
 
